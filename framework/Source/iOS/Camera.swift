@@ -48,6 +48,20 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     }
     public var runBenchmark:Bool = false
     public var logFPS:Bool = false
+    public var torchMode:Bool {
+      get {
+        return inputCamera.torchMode == AVCaptureDevice.TorchMode.on
+      }
+      set {
+        do {
+          try inputCamera.lockForConfiguration()
+          inputCamera.torchMode = (newValue) ? AVCaptureDevice.TorchMode.on : AVCaptureDevice.TorchMode.off
+          inputCamera.unlockForConfiguration()
+        }
+        catch {}
+      }
+    }
+  
     public var audioEncodingTarget:AudioEncodingTarget? {
         didSet {
             guard let audioEncodingTarget = audioEncodingTarget else {
