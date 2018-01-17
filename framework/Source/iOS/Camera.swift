@@ -48,6 +48,22 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     }
     public var runBenchmark:Bool = false
     public var logFPS:Bool = false
+    public var torchMode:Bool {
+      get {
+        return inputCamera.torchMode == AVCaptureDevice.TorchMode.on
+      }
+      set {
+        do {
+          if inputCamera.isTorchAvailable {
+            try inputCamera.lockForConfiguration()
+            inputCamera.torchMode = (newValue) ? AVCaptureDevice.TorchMode.on : AVCaptureDevice.TorchMode.off
+            inputCamera.unlockForConfiguration()
+          }
+        }
+        catch {}
+      }
+    }
+  
     public var audioEncodingTarget:AudioEncodingTarget? {
         didSet {
             guard let audioEncodingTarget = audioEncodingTarget else {
@@ -281,6 +297,13 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     
     public func transmitPreviousImage(to target:ImageConsumer, atIndex:UInt) {
         // Not needed for camera inputs
+    }
+  
+    // MARK: -
+    // MARK: Hardware access
+  
+    public func torchAvailable() -> Bool {
+      return inputCamera.isTorchAvailable
     }
     
     // MARK: -
