@@ -54,9 +54,11 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
       }
       set {
         do {
-          try inputCamera.lockForConfiguration()
-          inputCamera.torchMode = (newValue) ? AVCaptureDevice.TorchMode.on : AVCaptureDevice.TorchMode.off
-          inputCamera.unlockForConfiguration()
+          if inputCamera.isTorchAvailable {
+            try inputCamera.lockForConfiguration()
+            inputCamera.torchMode = (newValue) ? AVCaptureDevice.TorchMode.on : AVCaptureDevice.TorchMode.off
+            inputCamera.unlockForConfiguration()
+          }
         }
         catch {}
       }
@@ -295,6 +297,13 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     
     public func transmitPreviousImage(to target:ImageConsumer, atIndex:UInt) {
         // Not needed for camera inputs
+    }
+  
+    // MARK: -
+    // MARK: Hardware access
+  
+    public func torchAvailable() -> Bool {
+      return inputCamera.isTorchAvailable
     }
     
     // MARK: -
