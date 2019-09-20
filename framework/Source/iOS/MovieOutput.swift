@@ -520,8 +520,9 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
             do {
                 try NSObject.catchException {
                     while let audioBuffer = self.pendingAudioBuffers.first {
-                        if (!assetWriterAudioInput.append(audioBuffer)) {
+                        guard assetWriterAudioInput.append(audioBuffer) else {
                             print("WARNING: Trouble appending audio sample buffer: \(String(describing: self.assetWriter.error))")
+                            break
                         }
                         self.pendingAudioBuffers.removeFirst()
                         if shouldInvalidateSampleWhenDone {

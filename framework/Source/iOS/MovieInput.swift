@@ -389,9 +389,9 @@ public class MovieInput: ImageSource {
         
         progress?(currentSampleTime.seconds/duration.seconds)
         
-        if synchronizedMovieOutput != nil {
+        if let movieOutput = synchronizedMovieOutput {
             // For synchrozied transcoding, separate AVAssetReader thread and OpenGL thread to improve performance
-            sharedImageProcessingContext.runOperationAsynchronously { [weak self] in
+            movieOutput.movieProcessingContext.runOperationAsynchronously { [weak self] in
                 self?.processNextVideoSampleOnGLThread(sampleBuffer, currentSampleTime: currentSampleTime)
                 CMSampleBufferInvalidate(sampleBuffer)
             }
@@ -432,9 +432,7 @@ public class MovieInput: ImageSource {
             }
         }
         
-        sharedImageProcessingContext.runOperationSynchronously {
-            self.process(movieFrame:sampleBuffer)
-        }
+        process(movieFrame:sampleBuffer)
     }
     
     func readNextAudioSample(with assetReader: AVAssetReader, from audioTrackOutput:AVAssetReaderOutput) {
@@ -450,8 +448,8 @@ public class MovieInput: ImageSource {
         
         self.synchronizedEncodingDebugPrint("Process audio sample input. Time:\(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)))")
         
-        if synchronizedMovieOutput != nil {
-            sharedImageProcessingContext.runOperationAsynchronously { [weak self] in
+        if let movieOutput = self.synchronizedMovieOutput {
+            movieOutput.movieProcessingContext.runOperationAsynchronously { [weak self] in
                 guard let self = self else { return }
                 self.audioEncodingTarget?.processAudioBuffer(sampleBuffer, shouldInvalidateSampleWhenDone: !self.transcodingOnly)
             }
@@ -535,7 +533,7 @@ public class MovieInput: ImageSource {
         
         self.conditionLock.lock()
         // Allow reading if either input is able to accept data, prevent reading if both inputs are unable to accept data.
-        if(movieOutput.assetWriterVideoInput.isReadyForMoreMediaData || movieOutput.assetWriterAudioInput?.isReadyForMoreMediaData ?? false) {
+        if(movieOutput.assetWriterVideoInput.isReadyForMoreMediaData || movieOutput.assetWriterAudioInput?.isReadyForMoreMediaData == true) {
             self.readingShouldWait = false
             self.conditionLock.signal()
         }
