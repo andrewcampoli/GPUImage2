@@ -66,7 +66,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
     private let assetWriterPixelBufferInput:AVAssetWriterInputPixelBufferAdaptor
     public let size: Size
     private let colorSwizzlingShader:ShaderProgram
-    public var isTranscode = false
+    public let needAlignAV: Bool
     var videoEncodingIsFinished = false
     var audioEncodingIsFinished = false
     var markIsFinishedAfterProcessing = false
@@ -126,11 +126,12 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
     var preferredTransform: CGAffineTransform?
     private var isProcessing = false
     
-    public init(URL:Foundation.URL, fps: Double, size:Size, fileType:AVFileType = .mov, liveVideo:Bool = false, videoSettings:[String:Any]? = nil, videoNaturalTimeScale:CMTimeScale? = nil, optimizeForNetworkUse: Bool = false, disablePixelBufferAttachments: Bool = true, audioSettings:[String:Any]? = nil, audioSourceFormatHint:CMFormatDescription? = nil) throws {
+    public init(URL:Foundation.URL, fps: Double, size:Size, needAlignAV: Bool = true, fileType:AVFileType = .mov, liveVideo:Bool = false, videoSettings:[String:Any]? = nil, videoNaturalTimeScale:CMTimeScale? = nil, optimizeForNetworkUse: Bool = false, disablePixelBufferAttachments: Bool = true, audioSettings:[String:Any]? = nil, audioSourceFormatHint:CMFormatDescription? = nil) throws {
 
         print("movie output init \(URL)")
         self.url = URL
         self.fps = fps
+        self.needAlignAV = needAlignAV && (audioSettings != nil || audioSourceFormatHint != nil)
         
         if sharedImageProcessingContext.supportsTextureCaches() {
             self.colorSwizzlingShader = sharedImageProcessingContext.passthroughShader
@@ -155,7 +156,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
         
         localSettings[AVVideoWidthKey] = localSettings[AVVideoWidthKey] ?? size.width
         localSettings[AVVideoHeightKey] = localSettings[AVVideoHeightKey] ?? size.height
-        localSettings[AVVideoCodecKey] =  localSettings[AVVideoCodecKey] ?? AVVideoCodecH264
+        localSettings[AVVideoCodecKey] =  localSettings[AVVideoCodecKey] ?? AVVideoCodecType.h264.rawValue
         
         assetWriterVideoInput = AVAssetWriterInput(mediaType:.video, outputSettings:localSettings)
         assetWriterVideoInput.expectsMediaDataInRealTime = liveVideo
@@ -306,7 +307,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
             
             var lastFrameTime: CMTime?
             if let lastVideoFrame = self.previousVideoStartTime {
-                if self.isTranscode {
+                if !self.needAlignAV {
                     print("MovieOutput start endSession")
                     lastFrameTime = lastVideoFrame
                     self.assetWriter.endSession(atSourceTime: lastVideoFrame)
@@ -406,7 +407,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
             return true
         }
         
-        if !isTranscode && startFrameTime == nil {
+        if needAlignAV && startFrameTime == nil {
             _decideStartTime()
         }
         
@@ -420,7 +421,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
                     continue
                 }
                 
-                if previousVideoStartTime == nil && isTranscode {
+                if previousVideoStartTime == nil && !needAlignAV {
                     // This resolves black frames at the beginning. Any samples recieved before this time will be edited out.
                     assetWriter.startSession(atSourceTime: frameTime)
                     startFrameTime = frameTime
@@ -569,7 +570,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
             return true
         }
         
-        if !isTranscode && startFrameTime == nil {
+        if needAlignAV && startFrameTime == nil {
             _decideStartTime()
         }
         
@@ -577,7 +578,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
         for sampleBuffer in videoSampleBufferCache {
             let frameTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             
-            if previousVideoStartTime == nil && isTranscode {
+            if previousVideoStartTime == nil && !needAlignAV {
                 // This resolves black frames at the beginning. Any samples recieved before this time will be edited out.
                 assetWriter.startSession(atSourceTime: frameTime)
                 startFrameTime = frameTime
@@ -683,7 +684,7 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
             return true
         }
         
-        if startFrameTime == nil && !isTranscode {
+        if startFrameTime == nil && needAlignAV {
             _decideStartTime()
         }
         
@@ -736,11 +737,11 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
     }
     
     func _canStartWritingVideo() -> Bool {
-        isTranscode || (!isTranscode && hasAuidoBuffer && hasVideoBuffer)
+        !needAlignAV || (needAlignAV && hasAuidoBuffer && hasVideoBuffer)
     }
     
     func _canStartWritingAuido() -> Bool {
-        (isTranscode && previousVideoStartTime != nil) || (!isTranscode && hasAuidoBuffer && hasVideoBuffer)
+        (!needAlignAV && previousVideoStartTime != nil) || (needAlignAV && hasAuidoBuffer && hasVideoBuffer)
     }
     
     func _decideStartTime() {
