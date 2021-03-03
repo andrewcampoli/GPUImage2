@@ -123,8 +123,6 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
     
     public override init() {
         print("[MoviePlayer] init")
-        // Make sure player it intialized on the main thread, or it might cause KVO crash
-        assert(Thread.isMainThread)
         super.init()
     }
     
