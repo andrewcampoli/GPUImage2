@@ -18,6 +18,7 @@ public enum PictureInputError: Error, CustomStringConvertible {
     case zeroSizedImageError
     case dataProviderNilError
     case noSuchImageError(imageName: String)
+    case createImageError
     
     public var errorDescription: String {
         switch self {
@@ -27,6 +28,8 @@ public enum PictureInputError: Error, CustomStringConvertible {
             return "Unable to retrieve image dataProvider"
         case .noSuchImageError(let imageName):
             return "No such image named: \(imageName) in your application bundle"
+        case .createImageError:
+            return "Fail to create image"
         }
     }
     
@@ -41,6 +44,7 @@ public class PictureInput: ImageSource {
     public var framebufferUserInfo: [AnyHashable: Any]?
     public let imageName: String
     var hasProcessedImage: Bool = false
+    private static var ciContext = CIContext(options: nil)
     
     public init(
         image: CGImage,
@@ -48,7 +52,7 @@ public class PictureInput: ImageSource {
         smoothlyScaleOutput: Bool = false,
         orientation: ImageOrientation = .portrait) throws {
         self.imageName = imageName ?? "CGImage"
-
+        
         let widthOfImage = GLint(image.width)
         let heightOfImage = GLint(image.height)
         
@@ -162,21 +166,47 @@ public class PictureInput: ImageSource {
         try self.init(image: image.cgImage!, imageName: imageName, smoothlyScaleOutput: smoothlyScaleOutput, orientation: orientation ?? image.imageOrientation.gpuOrientation)
     }
     
+    public convenience init(image: UIImage, imageSize: CGSize, renderTargetSize: CGSize, renderTargetOffset: CGPoint, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil) throws {
+        var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
+        var cgImage: CGImage = image.cgImage!
+        try autoreleasepool {
+            let options: [CIImageOption : Any] = [.applyOrientationProperty : true,
+                                                  .properties : [kCGImagePropertyOrientation : image.imageOrientation.cgImageOrientation.rawValue]]
+            var newImage = CIImage(cgImage: cgImage, options: options)
+            // scale to image size
+            let ratioW = imageSize.width / image.size.width
+            let ratioH = imageSize.height / image.size.height
+            let fillRatio = max(ratioW, ratioH)
+            newImage = newImage.transformed(by: CGAffineTransform(scaleX: fillRatio, y: fillRatio))
+            let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
+            // crop image to target display frame
+            newImage = newImage.cropped(to: displayFrame)
+            guard let newCgImage = PictureInput.ciContext.createCGImage(newImage, from: newImage.extent) else {
+                throw PictureInputError.createImageError
+            }
+            cgImage = newCgImage
+            targetOrientation = orientation ?? .portrait
+        }
+        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation)
+    }
+    
     public convenience init(image: UIImage, size: CGSize?, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, transforms: [[PictureInputTransformStep]]? = nil) throws {
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
         var cgImage: CGImage = image.cgImage!
         if let targetSize = size {
-            autoreleasepool {
+            try autoreleasepool {
                 // Get CIImage with orientation
                 guard var newImage = CIImage(
-                        image: image,
-                        options: [
-                            .applyOrientationProperty: true,
-                            .properties: [
-                                kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue
-                            ]
+                    image: image,
+                    options: [
+                        .applyOrientationProperty: true,
+                        .properties: [
+                            kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue
                         ]
-                ) else { return }
+                    ]
+                ) else {
+                    throw PictureInputError.createImageError
+                }
                 
                 // Scale
                 let ratioW = targetSize.width / image.size.width
@@ -221,8 +251,10 @@ public class PictureInput: ImageSource {
                     height: targetSize.height
                 )
                 
-                let context = CIContext(options: nil)
-                cgImage = context.createCGImage(newImage, from: cropRect)!
+                guard let newCgImage = PictureInput.ciContext.createCGImage(newImage, from: cropRect) else {
+                    throw PictureInputError.createImageError
+                }
+                cgImage = newCgImage
                 targetOrientation = orientation ?? .portrait
             }
         }
