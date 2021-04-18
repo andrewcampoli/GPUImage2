@@ -192,19 +192,22 @@ public class PictureInput: ImageSource {
     
     public convenience init(image: UIImage, size: CGSize?, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, transforms: [[PictureInputTransformStep]]? = nil) throws {
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
-        var cgImage: CGImage = image.cgImage!
+        var croppedCGImage: CGImage?
         if let targetSize = size {
             try autoreleasepool {
                 // Get CIImage with orientation
-                guard var newImage = CIImage(
-                    image: image,
-                    options: [
+                let ciImage: CIImage?
+                if let associatedCIImage = image.ciImage {
+                    ciImage = associatedCIImage
+                } else {
+                    ciImage = CIImage(image: image, options: [
                         .applyOrientationProperty: true,
                         .properties: [
                             kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue
                         ]
-                    ]
-                ) else {
+                    ])
+                }
+                guard var newImage = ciImage else {
                     throw PictureInputError.createImageError
                 }
                 
@@ -254,9 +257,14 @@ public class PictureInput: ImageSource {
                 guard let newCgImage = PictureInput.ciContext.createCGImage(newImage, from: cropRect) else {
                     throw PictureInputError.createImageError
                 }
-                cgImage = newCgImage
+                croppedCGImage = newCgImage
                 targetOrientation = orientation ?? .portrait
             }
+        } else {
+            croppedCGImage = image.cgImage!
+        }
+        guard let cgImage = croppedCGImage else {
+            throw PictureInputError.createImageError
         }
         try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation)
     }
