@@ -10,7 +10,10 @@ open class OperationGroup: ImageProcessingOperation {
     public var debugRenderInfo: String = ""
     
     public func debugGetOnePassRenderInfos() -> String {
-        return inputImageRelay.debugGetOnePassRenderInfos()
+        return """
+{ OperationGroup: \(Self.self), subfilters: \(inputImageRelay.debugGetOnePassRenderInfos())
+}
+"""
     }
     #endif
     
