@@ -202,7 +202,7 @@ public class PictureInput: ImageSource {
             let ratioW = imageSize.width / image.size.width
             let ratioH = imageSize.height / image.size.height
             let fillRatio = max(ratioW, ratioH)
-            newImage = newImage.transformed(by: CGAffineTransform(scaleX: fillRatio, y: fillRatio))
+            newImage = newImage.scaled(by: fillRatio, roundRect: true)
             let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
             // crop image to target display frame
             newImage = newImage.cropped(to: displayFrame)
@@ -260,7 +260,7 @@ public class PictureInput: ImageSource {
                 let ratioW = targetSize.width / image.size.width
                 let ratioH = targetSize.height / image.size.height
                 let fillRatio = max(ratioW, ratioH)
-                newImage = newImage.transformed(by: CGAffineTransform(scaleX: fillRatio, y: fillRatio))
+                newImage = newImage.scaled(by: fillRatio, roundRect: true)
                 
                 var scaleX: CGFloat = 1
                 var scaleY: CGFloat = 1
@@ -398,4 +398,19 @@ public extension CGSize {
     #if DEBUG
     var debugRenderInfo: String { "\(width)x\(height)" }
     #endif
+}
+
+private extension CIImage {
+    func scaled(by scaleRatio: CGFloat, roundRect: Bool) -> CIImage {
+        let scaleTransform = CGAffineTransform(scaleX: scaleRatio, y: scaleRatio)
+        // NOTE: CIImage.extend will always return an integral rect, so if we want the accurate rect after transforming, we need to apply transform on the original rect
+        let transformedRect = extent.applying(scaleTransform)
+        let scaledImage = transformed(by: scaleTransform)
+        if roundRect {
+            let originRoundedImage = scaledImage.transformed(by: CGAffineTransform(translationX: transformedRect.origin.x.rounded(.towardZero) - transformedRect.origin.x, y: transformedRect.origin.y.rounded(.towardZero) - transformedRect.origin.y))
+            return originRoundedImage
+        } else {
+            return scaledImage
+        }
+    }
 }
