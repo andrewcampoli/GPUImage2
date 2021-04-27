@@ -17,12 +17,30 @@ public class RawDataOutput: ImageConsumer {
     
     public let sources = SourceContainer()
     public let maximumInputs: UInt = 1
+    
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
 
     public init() {
     }
 
     // TODO: Replace with texture caches
     public func newFramebufferAvailable(_ framebuffer: Framebuffer, fromSourceIndex: UInt) {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        defer {
+            debugRenderInfo = """
+{
+    RawDataOutput: {
+        input: \(framebuffer.debugRenderInfo),
+        output: { size: \(framebuffer.size.width * framebuffer.size.height * 4), type: RGBData },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+    }
+},
+"""
+        }
+        #endif
         let renderFramebuffer = sharedImageProcessingContext.framebufferCache.requestFramebufferWithProperties(orientation: framebuffer.orientation, size: framebuffer.size)
         renderFramebuffer.lock()
 

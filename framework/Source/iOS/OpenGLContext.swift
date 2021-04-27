@@ -30,6 +30,7 @@ public class OpenGLContext: SerialDispatch {
     public let dispatchQueueKey = DispatchSpecificKey<Int>()
     public let dispatchQueueKeyValue: Int
     public var executeStartTime: TimeInterval?
+    public lazy var _debugPipelineOnePassRenderInfo = [String]()
     
     // MARK: -
     // MARK: Initialization and teardown
@@ -106,4 +107,12 @@ public class OpenGLContext: SerialDispatch {
             return String(cString: unsafeBitCast(glGetString(GLenum(GL_EXTENSIONS)), to: UnsafePointer<CChar>.self))
         }
     }()
+    
+    public func debugResetOnePassRenderingInfo() {
+        _debugPipelineOnePassRenderInfo.removeAll()
+    }
+    
+    public func debugAppendRenderingInfo(_ info: String) {
+        _debugPipelineOnePassRenderInfo.append(info)
+    }
 }

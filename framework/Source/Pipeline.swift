@@ -6,12 +6,19 @@ public var _needCheckFilterContainerThread: Bool?
 
 public protocol ImageSource: AnyObject {
     var _needCheckSourceThread: Bool { get }
+    #if DEBUG
+    var debugRenderInfo: String { get }
+    func debugGetOnePassRenderInfos() -> String
+    #endif
     var targets: TargetContainer { get }
     func transmitPreviousImage(to target: ImageConsumer, atIndex: UInt)
 }
 
 public protocol ImageConsumer: AnyObject {
     var _needCheckConsumerThread: Bool { get }
+    #if DEBUG
+    var debugRenderInfo: String { get }
+    #endif
     var maximumInputs: UInt { get }
     var sources: SourceContainer { get }
     
@@ -100,6 +107,21 @@ public extension ImageSource {
             target.newFramebufferAvailable(framebuffer, fromSourceIndex: index)
         }
     }
+    
+    #if DEBUG
+    func debugGetOnePassRenderInfos() -> String {
+        var renderInfos = ""
+        renderInfos.append(debugRenderInfo)
+        for target in targets {
+            if let source = target.0 as? ImageSource {
+                renderInfos.append(source.debugGetOnePassRenderInfos())
+            } else {
+                renderInfos.append(target.0.debugRenderInfo)
+            }
+        }
+        return renderInfos
+    }
+    #endif
 }
 
 public extension ImageConsumer {
@@ -312,6 +334,10 @@ public class ImageRelay: ImageProcessingOperation {
             target.newFramebufferAvailable(framebuffer, fromSourceIndex: index)
         }
     }
+    
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
 }
 
 public protocol DebugPipelineNameable {

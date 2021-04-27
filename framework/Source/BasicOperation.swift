@@ -49,6 +49,10 @@ open class BasicOperation: ImageProcessingOperation {
     let maskImageRelay = ImageRelay()
     var maskFramebuffer: Framebuffer?
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     // MARK: -
     // MARK: Initialization and teardown
     
@@ -104,6 +108,25 @@ open class BasicOperation: ImageProcessingOperation {
     }
     
     open func renderFrame() {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        defer {
+            var inputsDebugInfo = ""
+            for framebuffer in inputFramebuffers {
+                inputsDebugInfo.append("\(framebuffer.value.debugRenderInfo), ")
+            }
+            debugRenderInfo = """
+{
+    \(Self.self): {
+        inputs: [
+            \(inputsDebugInfo)
+        ],
+        output: { size: \(renderFramebuffer.debugRenderInfo), time: \((CACurrentMediaTime() - startTime) * 1000.0)ms }
+    }
+},
+"""
+        }
+        #endif
         renderFramebuffer = sharedImageProcessingContext.framebufferCache.requestFramebufferWithProperties(orientation: .portrait, size: sizeOfInitialStageBasedOnFramebuffer(inputFramebuffers[0]!), stencil: mask != nil)
         
         let textureProperties = initialTextureProperties()

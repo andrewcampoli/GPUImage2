@@ -6,6 +6,14 @@ open class OperationGroup: ImageProcessingOperation {
     public var targets: TargetContainer { get { return outputImageRelay.targets } }
     public let maximumInputs: UInt = 1
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    
+    public func debugGetOnePassRenderInfos() -> String {
+        return inputImageRelay.debugGetOnePassRenderInfos()
+    }
+    #endif
+    
     public init() {
     }
     

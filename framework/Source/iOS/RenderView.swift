@@ -1,6 +1,6 @@
 import UIKit
 
-public protocol RenderViewDelegate: class {
+public protocol RenderViewDelegate: AnyObject {
     func willDisplayFramebuffer(renderView: RenderView, framebuffer: Framebuffer)
     func didDisplayFramebuffer(renderView: RenderView, framebuffer: Framebuffer)
     // Only use this if you need to do layout in willDisplayFramebuffer before the framebuffer actually gets displayed
@@ -33,6 +33,9 @@ public class RenderView: UIView, ImageConsumer {
     }()
     
     private var internalLayer: CAEAGLLayer!
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -207,6 +210,11 @@ public class RenderView: UIView, ImageConsumer {
                 // Bail if we couldn't successfully create the displayFramebuffer
                 return
             }
+            
+            #if DEBUG
+            let startTime = CACurrentMediaTime()
+            #endif
+            
             self.activateDisplayFramebuffer()
             
             clearFramebufferWithColor(self.backgroundRenderColor)
@@ -233,6 +241,17 @@ public class RenderView: UIView, ImageConsumer {
             sharedImageProcessingContext.presentBufferForDisplay()
             
             cleanup()
+            
+            #if DEBUG
+            self.debugRenderInfo = """
+{
+    RenderView: {
+        input: \(framebuffer.debugRenderInfo),
+        output: { size: \(self.backingSize.debugRenderInfo), time: \((CACurrentMediaTime() - startTime) * 1000.0)ms }
+    }
+},
+"""
+            #endif
         }
         
         if self.delegate?.shouldDisplayNextFramebufferAfterMainThreadLoop() ?? false {

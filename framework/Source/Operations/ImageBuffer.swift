@@ -7,6 +7,10 @@ public class ImageBuffer: ImageProcessingOperation {
     public let targets = TargetContainer()
     public let sources = SourceContainer()
     var bufferedFramebuffers = [Framebuffer]()
+    
+    #if DEBUG
+    public var debugRenderInfo: String { "" }
+    #endif
 
     public func newFramebufferAvailable(_ framebuffer: Framebuffer, fromSourceIndex: UInt) {
         bufferedFramebuffers.append(framebuffer)

@@ -81,6 +81,10 @@ public class MovieInput: ImageSource {
     var movieFramebuffer: Framebuffer?
     public var framebufferUserInfo: [AnyHashable: Any]?
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     // TODO: Someone will have to add back in the AVPlayerItem logic, because I don't know how that works
     public init(asset: AVAsset, videoComposition: AVVideoComposition?, playAtActualSpeed: Bool = false, loop: Bool = false, playrate: Double = 1.0, audioSettings: [String: Any]? = nil, maxFPS: Float? = nil) throws {
         debugPrint("movie input init \(asset)")
@@ -465,6 +469,16 @@ public class MovieInput: ImageSource {
             print("Cannot generate framebuffer from YUVBuffer")
             return
         }
+        #if DEBUG
+        debugRenderInfo = """
+{
+    MovieInput: {
+        input: \(CVPixelBufferGetWidth(movieFrame))x\(CVPixelBufferGetHeight(movieFrame)), input_type: CVPixelBuffer,
+        output: { size: \(framebuffer.debugRenderInfo), time: \((CACurrentMediaTime() - startTime) * 1000.0)ms }
+    }
+},
+"""
+        #endif
         framebuffer.userInfo = framebufferUserInfo
         self.movieFramebuffer = framebuffer
         self.updateTargetsWithFramebuffer(framebuffer)

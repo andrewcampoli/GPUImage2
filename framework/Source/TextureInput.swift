@@ -15,6 +15,10 @@
 public class TextureInput: ImageSource {
     public let targets = TargetContainer()
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     let textureFramebuffer: Framebuffer
 
     public init(texture: GLuint, size: Size, orientation: ImageOrientation = .portrait) {

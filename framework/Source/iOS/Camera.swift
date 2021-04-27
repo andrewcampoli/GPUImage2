@@ -127,6 +127,10 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     var lastCheckTime = CACurrentMediaTime()
     
     var captureSessionRestartAttempts = 0
+    
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
 
     public init(sessionPreset: AVCaptureSession.Preset, cameraDevice: AVCaptureDevice? = nil, location: PhysicalCameraLocation = .backFacing, captureAsYUV: Bool = true, photoOutput: AVCapturePhotoOutput? = nil, metadataDelegate: AVCaptureMetadataOutputObjectsDelegate? = nil, metadataObjectTypes: [AVMetadataObject.ObjectType]? = nil, deviceType: AVCaptureDevice.DeviceType = .builtInWideAngleCamera) throws {
         debugPrint("camera init")
@@ -394,6 +398,18 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
                 glTexImage2D(GLenum(GL_TEXTURE_2D), 0, GL_RGBA, GLsizei(bufferWidth), GLsizei(bufferHeight), 0, GLenum(GL_BGRA), GLenum(GL_UNSIGNED_BYTE), CVPixelBufferGetBaseAddress(cameraFrame))
             }
             CVPixelBufferUnlockBaseAddress(cameraFrame, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+            
+            #if DEBUG
+            self.debugRenderInfo = """
+{
+    Camera: {
+        input: \(bufferWidth)x\(bufferHeight), input_type: CMSampleBuffer,
+        output: { size: \(cameraFramebuffer.debugRenderInfo) },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+    }
+},
+"""
+            #endif
             
             cameraFramebuffer.timingStyle = .videoFrame(timestamp:Timestamp(currentTime))
             self.updateTargetsWithFramebuffer(cameraFramebuffer)

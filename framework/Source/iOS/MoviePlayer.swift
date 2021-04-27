@@ -78,6 +78,10 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
     var framebufferUserInfo: [AnyHashable: Any]?
     var observations = [NSKeyValueObservation]()
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     struct SeekingInfo: Equatable {
         let time: CMTime
         let toleranceBefore: CMTime
@@ -619,6 +623,18 @@ private extension MoviePlayer {
         
         guard hasTarget, let framebuffer = framebufferGenerator.generateFromYUVBuffer(pixelBuffer, frameTime: timeForDisplay, videoOrientation: videoOrientation) else { return }
         framebuffer.userInfo = framebufferUserInfo
+        
+        #if DEBUG
+        debugRenderInfo = """
+{
+    MoviePlayer: {
+        input: \(CVPixelBufferGetWidth(pixelBuffer))x\(CVPixelBufferGetHeight(pixelBuffer)), input_type: CVPixelBuffer,
+        output: \(framebuffer.debugRenderInfo),
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+    }
+},
+"""
+        #endif
         
         updateTargetsWithFramebuffer(framebuffer)
     }

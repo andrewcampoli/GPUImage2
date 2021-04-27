@@ -6,4 +6,8 @@ public struct Size {
         self.width = width
         self.height = height
     }
+    
+    #if DEBUG
+    public var debugRenderInfo: String { "\(width)x\(height)" }
+    #endif
 }

@@ -54,6 +54,9 @@ public class MovieCache: ImageConsumer, AudioEncodingTarget {
         return movieOutput.writerStatus == .unknown
     }
     private var startingVideoID: String?
+    #if DEBUG
+    public var debugRenderInfo: String = "{ MovieCache: passthrough },"
+    #endif
     
     public init() {
         print("MovieCache init")

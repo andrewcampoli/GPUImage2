@@ -32,6 +32,10 @@ public enum PixelFormat {
 public class RawDataInput: ImageSource {
     public let targets = TargetContainer()
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     public init() {
     }
 

@@ -50,6 +50,10 @@ public struct GLSize {
         self.width = size.glWidth()
         self.height = size.glHeight()
     }
+    
+    #if DEBUG
+    public var debugRenderInfo: String { "\(width)x\(height)" }
+    #endif
 }
 
 extension Size {

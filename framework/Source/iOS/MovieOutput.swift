@@ -9,7 +9,7 @@ public protocol AudioEncodingTarget {
     func readyForNextAudioBuffer() -> Bool
 }
 
-public protocol MovieOutputDelegate: class {
+public protocol MovieOutputDelegate: AnyObject {
     func movieOutputDidStartWriting(_ movieOutput: MovieOutput, at time: CMTime)
     func movieOutputWriterError(_ movieOutput: MovieOutput, error: Error)
 }
@@ -125,6 +125,9 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
     }
     var preferredTransform: CGAffineTransform?
     private var isProcessing = false
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
     
     public init(URL: Foundation.URL, fps: Double, size: Size, needAlignAV: Bool = true, fileType: AVFileType = .mov, liveVideo: Bool = false, videoSettings: [String: Any]? = nil, videoNaturalTimeScale: CMTimeScale? = nil, optimizeForNetworkUse: Bool = false, disablePixelBufferAttachments: Bool = true, audioSettings: [String: Any]? = nil, audioSourceFormatHint: CMFormatDescription? = nil) throws {
         print("movie output init \(URL)")
@@ -406,6 +409,22 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
         if needAlignAV && startFrameTime == nil {
             _decideStartTime()
         }
+        
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        let bufferCount = frameBufferCache.count
+        defer {
+            debugRenderInfo = """
+{
+    MovieOutput: {
+        input: \(framebuffer.debugRenderInfo), input_count: \(bufferCount),
+        output: { size: \(size.debugRenderInfo), type: AVAssetWriter },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+    }
+},
+"""
+        }
+        #endif
         
         var processedBufferCount = 0
         for framebuffer in frameBufferCache {

@@ -198,6 +198,12 @@ public class Framebuffer: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+    
+    #if DEBUG
+    public var debugRenderInfo: String {
+        "{ size: \(size.width)x\(size.height) }"
+    }
+    #endif
 }
 
 func hashForFramebufferWithProperties(orientation: ImageOrientation, size: GLSize, textureOnly: Bool = false, minFilter: Int32 = GL_LINEAR, magFilter: Int32 = GL_LINEAR, wrapS: Int32 = GL_CLAMP_TO_EDGE, wrapT: Int32 = GL_CLAMP_TO_EDGE, internalFormat: Int32 = GL_RGBA, format: Int32 = GL_BGRA, type: Int32 = GL_UNSIGNED_BYTE, stencil: Bool = false) -> Int64 {

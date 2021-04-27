@@ -21,6 +21,10 @@ public class PictureOutput: ImageConsumer {
     public let maximumInputs: UInt = 1
     var url: URL!
     
+    #if DEBUG
+    public var debugRenderInfo: String = ""
+    #endif
+    
     public init() {
         debugPrint("PictureOutput init")
     }
@@ -63,6 +67,20 @@ public class PictureOutput: ImageConsumer {
     }
     
     public func newFramebufferAvailable(_ framebuffer: Framebuffer, fromSourceIndex: UInt) {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        defer {
+            debugRenderInfo = """
+{
+    PictureOutput: {
+        input: \(framebuffer.debugRenderInfo),
+        output: { type: ImageOutput, time: \((CACurrentMediaTime() - startTime) * 1000.0)ms }
+    }
+},
+"""
+        }
+        #endif
+        
         if keepImageAroundForSynchronousCapture {
             storedFramebuffer?.unlock()
             storedFramebuffer = framebuffer

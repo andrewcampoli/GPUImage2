@@ -45,12 +45,33 @@ public class PictureInput: ImageSource {
     public let imageName: String
     var hasProcessedImage: Bool = false
     private static var ciContext = CIContext(options: nil)
+    #if DEBUG
+    public var printDebugRenderInfos = true
+    public var debugRenderInfo: String = ""
+    #endif
     
     public init(
         image: CGImage,
         imageName: String? = nil,
         smoothlyScaleOutput: Bool = false,
-        orientation: ImageOrientation = .portrait) throws {
+        orientation: ImageOrientation = .portrait,
+        preprocessRenderInfo: String = "") throws {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        defer {
+            debugRenderInfo = """
+\(preprocessRenderInfo)
+{
+    PictureInput: {
+        input: \(image.width)x\(image.height), input_type: CGImage,
+        output: { size: \(imageFramebuffer?.debugRenderInfo ?? "") },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+    }
+},
+"""
+        }
+        #endif
+        
         self.imageName = imageName ?? "CGImage"
         
         let widthOfImage = GLint(image.width)
@@ -167,6 +188,10 @@ public class PictureInput: ImageSource {
     }
     
     public convenience init(image: UIImage, imageSize: CGSize, renderTargetSize: CGSize, renderTargetOffset: CGPoint, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil) throws {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        #endif
+        
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
         var cgImage: CGImage = image.cgImage!
         try autoreleasepool {
@@ -187,10 +212,30 @@ public class PictureInput: ImageSource {
             cgImage = newCgImage
             targetOrientation = orientation ?? .portrait
         }
-        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation)
+        
+        let preprocessRenderInfo: String
+        #if DEBUG
+        preprocessRenderInfo = """
+{
+    PictureInput_pre_process : {
+        input: {
+            size: \(image.size.debugRenderInfo), type: UIImage, imageSize:\(imageSize.debugRenderInfo), renderTargetSize: \(renderTargetSize.debugRenderInfo), renderTargetOffset: \(renderTargetOffset.debugDescription)
+        },
+        output: { size: \(cgImage.width)x\(cgImage.height), type: CGImage },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+},
+"""
+        #else
+        preprocessRenderInfo = ""
+        #endif
+        
+        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation, preprocessRenderInfo: preprocessRenderInfo)
     }
     
     public convenience init(image: UIImage, size: CGSize?, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, transforms: [[PictureInputTransformStep]]? = nil) throws {
+        #if DEBUG
+        let startTime = CACurrentMediaTime()
+        #endif
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
         var croppedCGImage: CGImage?
         if let targetSize = size {
@@ -260,13 +305,37 @@ public class PictureInput: ImageSource {
                 croppedCGImage = newCgImage
                 targetOrientation = orientation ?? .portrait
             }
+        } else if image.imageOrientation != .up,
+                  let ciImage = CIImage(image: image,
+                                        options: [.applyOrientationProperty: true,
+                                                  .properties: [ kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue ]]),
+                  let rotatedImage = PictureInput.ciContext.createCGImage(ciImage, from: ciImage.extent) {
+            // Rotated correct orientation
+            croppedCGImage = rotatedImage
         } else {
             croppedCGImage = image.cgImage!
         }
         guard let cgImage = croppedCGImage else {
             throw PictureInputError.createImageError
         }
-        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation)
+        
+        let preprocessRenderInfo: String
+        #if DEBUG
+        preprocessRenderInfo = """
+{
+    PictureInput_pre_process : {
+        input: {
+            size: \(image.size.debugRenderInfo), type: UIImage, size:\(size?.debugRenderInfo ?? ""), transforms: \(String(describing: transforms))
+        },
+        output: { size: \(cgImage.width)x\(cgImage.height), type: CGImage },
+        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
+},
+"""
+        #else
+        preprocessRenderInfo = ""
+        #endif
+        
+        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation, preprocessRenderInfo: preprocessRenderInfo)
     }
     
     deinit {
@@ -284,6 +353,11 @@ public class PictureInput: ImageSource {
                     self.updateTargetsWithFramebuffer(framebuffer)
                     self.hasProcessedImage = true
                 }
+                #if DEBUG
+                if self.printDebugRenderInfos {
+                    debugPrint(self.debugGetOnePassRenderInfos())
+                }
+                #endif
             }
         } else {
             sharedImageProcessingContext.runOperationAsynchronously {
@@ -291,6 +365,11 @@ public class PictureInput: ImageSource {
                     self.updateTargetsWithFramebuffer(framebuffer)
                     self.hasProcessedImage = true
                 }
+                #if DEBUG
+                if self.printDebugRenderInfos {
+                    debugPrint(self.debugGetOnePassRenderInfos())
+                }
+                #endif
             }
         }
     }
@@ -315,4 +394,8 @@ public extension CGSize {
             return CGSize(width: height, height: width)
         }
     }
+    
+    #if DEBUG
+    var debugRenderInfo: String { "\(width)x\(height)" }
+    #endif
 }

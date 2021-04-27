@@ -14,6 +14,9 @@ public class LookupFilter: BasicOperation {
     public var lookupImage: PictureInput? { // TODO: Check for retain cycles in all cases here
         didSet {
             lookupImage?.addTarget(self, atTargetIndex: 1)
+            #if DEBUG
+            lookupImage?.printDebugRenderInfos = true
+            #endif
             lookupImage?.processImage()
         }
     }

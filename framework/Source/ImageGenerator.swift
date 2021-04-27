@@ -1,5 +1,9 @@
 public class ImageGenerator: ImageSource {
     public var size: Size
+    
+    #if DEBUG
+    public var debugRenderInfo: String { "{ ImageGenerator: { output: \(imageFramebuffer.debugRenderInfo) } }," }
+    #endif
 
     public let targets = TargetContainer()
     var imageFramebuffer: Framebuffer!
