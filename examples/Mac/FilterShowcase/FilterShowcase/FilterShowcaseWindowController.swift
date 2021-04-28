@@ -59,7 +59,7 @@ class FilterShowcaseWindowController: NSWindowController {
                 self.blendImage.addTarget((currentFilterOperation!.filter))
                 currentFilterOperation!.filter.addTarget(filterView!)
                 self.blendImage.processImage()
-            case let .custom(filterSetupFunction:setupFunction):
+            case let .custom(filterSetupFunction: setupFunction):
                 currentFilterOperation!.configureCustomFilter(setupFunction(videoCamera!, currentFilterOperation!.filter, filterView!))
         }
         

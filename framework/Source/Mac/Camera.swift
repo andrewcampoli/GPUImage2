@@ -156,7 +156,7 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
             }
             CVPixelBufferUnlockBaseAddress(cameraFrame, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
             
-            cameraFramebuffer.timingStyle = .videoFrame(timestamp:Timestamp(currentTime))
+            cameraFramebuffer.timingStyle = .videoFrame(timestamp: Timestamp(currentTime))
             self.updateTargetsWithFramebuffer(cameraFramebuffer)
             
             if self.runBenchmark {

@@ -91,9 +91,9 @@ extension ViewController: CameraDelegate {
         let bl = Position(x, y + height)
         let br = Position(x + width, y + height)
 
-        return [.segment(p1:tl, p2:tr),   // top
-                .segment(p1:tr, p2:br),   // right
-                .segment(p1:br, p2:bl),   // bottom
-                .segment(p1:bl, p2:tl)]   // left
+        return [.segment(p1: tl, p2: tr),   // top
+                .segment(p1: tr, p2: br),   // right
+                .segment(p1: br, p2: bl),   // bottom
+                .segment(p1: bl, p2: tl)]   // left
     }
 }

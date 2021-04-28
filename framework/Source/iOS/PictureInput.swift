@@ -195,8 +195,8 @@ public class PictureInput: ImageSource {
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
         var cgImage: CGImage = image.cgImage!
         try autoreleasepool {
-            let options: [CIImageOption : Any] = [.applyOrientationProperty : true,
-                                                  .properties : [kCGImagePropertyOrientation : image.imageOrientation.cgImageOrientation.rawValue]]
+            let options: [CIImageOption: Any] = [.applyOrientationProperty: true,
+                                                  .properties: [kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue]]
             var newImage = CIImage(cgImage: cgImage, options: options)
             // scale to image size
             let ratioW = imageSize.width / image.size.width

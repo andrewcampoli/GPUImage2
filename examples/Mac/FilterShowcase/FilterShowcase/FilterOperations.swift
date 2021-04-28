@@ -6,7 +6,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { AlphaBlend() },
         listName: "Highlights Blur",
         titleName: "Gaussian Blur Lumi>0.6(alpha)",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.8),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.8),
         sliderUpdateCallback: {filter, sliderValue in
             filter.mix = sliderValue
         },
@@ -24,7 +24,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { AlphaBlend() },
         listName: "Soft Focus",
         titleName: "Gaussian Blur + Alpha Blend",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.mix = sliderValue
         },
@@ -43,7 +43,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SaturationAdjustment() },
         listName: "Saturation",
         titleName: "Saturation",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:2.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 2.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.saturation = sliderValue
         },
@@ -53,7 +53,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ContrastAdjustment() },
         listName: "Contrast",
         titleName: "Contrast",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:4.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 4.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.contrast = sliderValue
         },
@@ -63,7 +63,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { BrightnessAdjustment() },
         listName: "Brightness",
         titleName: "Brightness",
-        sliderConfiguration: .enabled(minimumValue:-1.0, maximumValue:1.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: -1.0, maximumValue: 1.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.brightness = sliderValue
         },
@@ -73,7 +73,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { LevelsAdjustment() },
         listName: "Levels",
         titleName: "Levels",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.minimum = Color(red: Float(sliderValue), green: Float(sliderValue), blue: Float(sliderValue))
             filter.middle = Color(red: 1.0, green: 1.0, blue: 1.0)
@@ -87,7 +87,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ExposureAdjustment() },
         listName: "Exposure",
         titleName: "Exposure",
-        sliderConfiguration: .enabled(minimumValue:-4.0, maximumValue:4.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: -4.0, maximumValue: 4.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.exposure = sliderValue
         },
@@ -97,7 +97,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { RGBAdjustment() },
         listName: "RGB",
         titleName: "RGB",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:2.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 2.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.green = sliderValue
         },
@@ -107,7 +107,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { HueAdjustment() },
         listName: "Hue",
         titleName: "Hue",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:360.0, initialValue:90.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 360.0, initialValue: 90.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.hue = sliderValue
         },
@@ -117,7 +117,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { WhiteBalance() },
         listName: "White balance",
         titleName: "White Balance",
-        sliderConfiguration: .enabled(minimumValue:2500.0, maximumValue:7500.0, initialValue:5000.0),
+        sliderConfiguration: .enabled(minimumValue: 2500.0, maximumValue: 7500.0, initialValue: 5000.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.temperature = sliderValue
         },
@@ -127,7 +127,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { MonochromeFilter() },
         listName: "Monochrome",
         titleName: "Monochrome",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.intensity = sliderValue
         },
@@ -150,7 +150,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Sharpen() },
         listName: "Sharpen",
         titleName: "Sharpen",
-        sliderConfiguration: .enabled(minimumValue:-1.0, maximumValue:4.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: -1.0, maximumValue: 4.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.sharpness = sliderValue
         },
@@ -160,7 +160,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { UnsharpMask() },
         listName: "Unsharp mask",
         titleName: "Unsharp Mask",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:5.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 5.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.intensity = sliderValue
         },
@@ -170,7 +170,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { TransformOperation() },
         listName: "Transform (2-D)",
         titleName: "Transform (2-D)",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:6.28, initialValue:0.75),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 6.28, initialValue: 0.75),
         sliderUpdateCallback: {filter, sliderValue in
             filter.transform = Matrix4x4(CGAffineTransform(rotationAngle: CGFloat(sliderValue)))
         },
@@ -180,7 +180,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { TransformOperation() },
         listName: "Transform (3-D)",
         titleName: "Transform (3-D)",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:6.28, initialValue:0.75),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 6.28, initialValue: 0.75),
         sliderUpdateCallback: {filter, sliderValue in
             var perspectiveTransform = CATransform3DIdentity
             perspectiveTransform.m34 = 0.4
@@ -195,7 +195,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Crop() },
         listName: "Crop",
         titleName: "Crop",
-        sliderConfiguration: .enabled(minimumValue:240.0, maximumValue:480.0, initialValue:240.0),
+        sliderConfiguration: .enabled(minimumValue: 240.0, maximumValue: 480.0, initialValue: 240.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.cropSizeInPixels = Size(width: 480.0, height: sliderValue)
         },
@@ -205,7 +205,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ResizeCrop() },
         listName: "ResizeCrop",
         titleName: "ResizeCrop",
-        sliderConfiguration: .enabled(minimumValue:240.0, maximumValue:480.0, initialValue:240.0),
+        sliderConfiguration: .enabled(minimumValue: 240.0, maximumValue: 480.0, initialValue: 240.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.cropSizeInPixels = Size(width: 480.0, height: sliderValue)
         },
@@ -231,7 +231,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { GammaAdjustment() },
         listName: "Gamma",
         titleName: "Gamma",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:3.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 3.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.gamma = sliderValue
         },
@@ -242,7 +242,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { HighlightsAndShadows() },
         listName: "Highlights and shadows",
         titleName: "Highlights and Shadows",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.highlights = sliderValue
         },
@@ -252,7 +252,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Haze() },
         listName: "Haze / UV",
         titleName: "Haze / UV",
-        sliderConfiguration: .enabled(minimumValue:-0.2, maximumValue:0.2, initialValue:0.2),
+        sliderConfiguration: .enabled(minimumValue: -0.2, maximumValue: 0.2, initialValue: 0.2),
         sliderUpdateCallback: {filter, sliderValue in
             filter.distance = sliderValue
         },
@@ -262,7 +262,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SepiaToneFilter() },
         listName: "Sepia tone",
         titleName: "Sepia Tone",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.intensity = sliderValue
         },
@@ -304,7 +304,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Solarize() },
         listName: "Solarize",
         titleName: "Solarize",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -314,7 +314,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Vibrance() },
         listName: "Vibrance",
         titleName: "Vibrance",
-        sliderConfiguration: .enabled(minimumValue:-1.2, maximumValue:1.2, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: -1.2, maximumValue: 1.2, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.vibrance = sliderValue
         },
@@ -324,7 +324,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { HighlightAndShadowTint() },
         listName: "Highlight and shadow tint",
         titleName: "Highlight / Shadow Tint",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.shadowTintIntensity = sliderValue
         },
@@ -342,7 +342,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Histogram(type: .rgb) },
         listName: "Histogram",
         titleName: "Histogram",
-        sliderConfiguration: .enabled(minimumValue:4.0, maximumValue:32.0, initialValue:16.0),
+        sliderConfiguration: .enabled(minimumValue: 4.0, maximumValue: 32.0, initialValue: 16.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.downsamplingFactor = UInt(round(sliderValue))
         },
@@ -407,7 +407,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { LuminanceThreshold() },
         listName: "Luminance threshold",
         titleName: "Luminance Threshold",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -417,7 +417,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { AdaptiveThreshold() },
         listName: "Adaptive threshold",
         titleName: "Adaptive Threshold",
-        sliderConfiguration: .enabled(minimumValue:1.0, maximumValue:20.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 1.0, maximumValue: 20.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurRadiusInPixels = sliderValue
         },
@@ -427,7 +427,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { AverageLuminanceThreshold() },
         listName: "Average luminance threshold",
         titleName: "Avg. Lum. Threshold",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:2.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 2.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.thresholdMultiplier = sliderValue
         },
@@ -437,7 +437,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Pixellate() },
         listName: "Pixellate",
         titleName: "Pixellate",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:0.3, initialValue:0.05),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 0.3, initialValue: 0.05),
         sliderUpdateCallback: {filter, sliderValue in
             filter.fractionalWidthOfAPixel = sliderValue
         },
@@ -447,7 +447,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { PolarPixellate() },
         listName: "Polar pixellate",
         titleName: "Polar Pixellate",
-        sliderConfiguration: .enabled(minimumValue:-0.1, maximumValue:0.1, initialValue:0.05),
+        sliderConfiguration: .enabled(minimumValue: -0.1, maximumValue: 0.1, initialValue: 0.05),
         sliderUpdateCallback: {filter, sliderValue in
             filter.pixelSize = Size(width: sliderValue, height: sliderValue)
         },
@@ -478,7 +478,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { PolkaDot() },
         listName: "Polka dot",
         titleName: "Polka Dot",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:0.3, initialValue:0.05),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 0.3, initialValue: 0.05),
         sliderUpdateCallback: {filter, sliderValue in
             filter.fractionalWidthOfAPixel = sliderValue
         },
@@ -488,7 +488,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Halftone() },
         listName: "Halftone",
         titleName: "Halftone",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:0.05, initialValue:0.01),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 0.05, initialValue: 0.01),
         sliderUpdateCallback: {filter, sliderValue in
             filter.fractionalWidthOfAPixel = sliderValue
         },
@@ -498,7 +498,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Crosshatch() },
         listName: "Crosshatch",
         titleName: "Crosshatch",
-        sliderConfiguration: .enabled(minimumValue:0.01, maximumValue:0.06, initialValue:0.03),
+        sliderConfiguration: .enabled(minimumValue: 0.01, maximumValue: 0.06, initialValue: 0.03),
         sliderUpdateCallback: {filter, sliderValue in
             filter.crossHatchSpacing = sliderValue
         },
@@ -508,7 +508,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SobelEdgeDetection() },
         listName: "Sobel edge detection",
         titleName: "Sobel Edge Detection",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.25),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.25),
         sliderUpdateCallback: {filter, sliderValue in
             filter.edgeStrength = sliderValue
         },
@@ -518,7 +518,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { PrewittEdgeDetection() },
         listName: "Prewitt edge detection",
         titleName: "Prewitt Edge Detection",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.edgeStrength = sliderValue
         },
@@ -528,7 +528,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { CannyEdgeDetection() },
         listName: "Canny edge detection",
         titleName: "Canny Edge Detection",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:4.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 4.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurRadiusInPixels = sliderValue
         },
@@ -538,7 +538,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ThresholdSobelEdgeDetection() },
         listName: "Threshold edge detection",
         titleName: "Threshold Edge Detection",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.25),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.25),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -548,7 +548,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { HarrisCornerDetector() },
         listName: "Harris corner detector",
         titleName: "Harris Corner Detector",
-        sliderConfiguration: .enabled(minimumValue:0.01, maximumValue:0.70, initialValue:0.20),
+        sliderConfiguration: .enabled(minimumValue: 0.01, maximumValue: 0.70, initialValue: 0.20),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -579,7 +579,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { NobleCornerDetector() },
         listName: "Noble corner detector",
         titleName: "Noble Corner Detector",
-        sliderConfiguration: .enabled(minimumValue:0.01, maximumValue:0.70, initialValue:0.20),
+        sliderConfiguration: .enabled(minimumValue: 0.01, maximumValue: 0.70, initialValue: 0.20),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -610,7 +610,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ShiTomasiFeatureDetector() },
         listName: "Shi-Tomasi feature detector",
         titleName: "Shi-Tomasi Feature Detector",
-        sliderConfiguration: .enabled(minimumValue:0.01, maximumValue:0.70, initialValue:0.20),
+        sliderConfiguration: .enabled(minimumValue: 0.01, maximumValue: 0.70, initialValue: 0.20),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -650,7 +650,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { LowPassFilter() },
         listName: "Low pass",
         titleName: "Low Pass",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.strength = sliderValue
         },
@@ -660,7 +660,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { HighPassFilter() },
         listName: "High pass",
         titleName: "High Pass",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.strength = sliderValue
         },
@@ -672,7 +672,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SketchFilter() },
         listName: "Sketch",
         titleName: "Sketch",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.edgeStrength = sliderValue
         },
@@ -682,7 +682,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ThresholdSketchFilter() },
         listName: "Threshold Sketch",
         titleName: "Threshold Sketch",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.25),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.25),
         sliderUpdateCallback: {filter, sliderValue in
             filter.threshold = sliderValue
         },
@@ -700,7 +700,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SmoothToonFilter() },
         listName: "Smooth toon",
         titleName: "Smooth Toon",
-        sliderConfiguration: .enabled(minimumValue:1.0, maximumValue:6.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 1.0, maximumValue: 6.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurRadiusInPixels = sliderValue
         },
@@ -710,7 +710,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { TiltShift() },
         listName: "Tilt shift",
         titleName: "Tilt Shift",
-        sliderConfiguration: .enabled(minimumValue:0.2, maximumValue:0.8, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.2, maximumValue: 0.8, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.topFocusLevel = sliderValue - 0.1
             filter.bottomFocusLevel = sliderValue + 0.1
@@ -729,7 +729,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Posterize() },
         listName: "Posterize",
         titleName: "Posterize",
-        sliderConfiguration: .enabled(minimumValue:1.0, maximumValue:20.0, initialValue:10.0),
+        sliderConfiguration: .enabled(minimumValue: 1.0, maximumValue: 20.0, initialValue: 10.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.colorLevels = round(sliderValue)
         },
@@ -758,7 +758,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { EmbossFilter() },
         listName: "Emboss",
         titleName: "Emboss",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:5.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 5.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.intensity = sliderValue
         },
@@ -776,7 +776,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ChromaKeying() },
         listName: "Chroma key",
         titleName: "Chroma Key",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.00, initialValue:0.40),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.00, initialValue: 0.40),
         sliderUpdateCallback: {filter, sliderValue in
             filter.thresholdSensitivity = sliderValue
         },
@@ -798,7 +798,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { KuwaharaFilter() },
         listName: "Kuwahara",
         titleName: "Kuwahara",
-        sliderConfiguration: .enabled(minimumValue:3.0, maximumValue:9.0, initialValue:3.0),
+        sliderConfiguration: .enabled(minimumValue: 3.0, maximumValue: 9.0, initialValue: 3.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.radius = Int(round(sliderValue))
         },
@@ -816,7 +816,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { Vignette() },
         listName: "Vignette",
         titleName: "Vignette",
-        sliderConfiguration: .enabled(minimumValue:0.5, maximumValue:0.9, initialValue:0.75),
+        sliderConfiguration: .enabled(minimumValue: 0.5, maximumValue: 0.9, initialValue: 0.75),
         sliderUpdateCallback: {filter, sliderValue in
             filter.end = sliderValue
         },
@@ -826,7 +826,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { GaussianBlur() },
         listName: "Gaussian blur",
         titleName: "Gaussian Blur",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:40.0, initialValue:2.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 40.0, initialValue: 2.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurRadiusInPixels = sliderValue
         },
@@ -836,7 +836,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { BoxBlur() },
         listName: "Box blur",
         titleName: "Box Blur",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:40.0, initialValue:2.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 40.0, initialValue: 2.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurRadiusInPixels = sliderValue
         },
@@ -854,7 +854,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { BilateralBlur() },
         listName: "Bilateral blur",
         titleName: "Bilateral Blur",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:10.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 10.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.distanceNormalizationFactor = sliderValue
         },
@@ -864,7 +864,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { MotionBlur() },
         listName: "Motion blur",
         titleName: "Motion Blur",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:180.0, initialValue:0.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 180.0, initialValue: 0.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurAngle = sliderValue
         },
@@ -874,7 +874,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ZoomBlur() },
         listName: "Zoom blur",
         titleName: "Zoom Blur",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:2.5, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 2.5, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.blurSize = sliderValue
         },
@@ -892,7 +892,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SwirlDistortion() },
         listName: "Swirl",
         titleName: "Swirl",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:2.0, initialValue:1.0),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 2.0, initialValue: 1.0),
         sliderUpdateCallback: {filter, sliderValue in
             filter.angle = sliderValue
         },
@@ -902,7 +902,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { BulgeDistortion() },
         listName: "Bulge",
         titleName: "Bulge",
-        sliderConfiguration: .enabled(minimumValue:-1.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: -1.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             //            filter.scale = sliderValue
             filter.center = Position(0.5, sliderValue)
@@ -913,7 +913,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { PinchDistortion() },
         listName: "Pinch",
         titleName: "Pinch",
-        sliderConfiguration: .enabled(minimumValue:-2.0, maximumValue:2.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: -2.0, maximumValue: 2.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.scale = sliderValue
         },
@@ -923,7 +923,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { SphereRefraction() },
         listName: "Sphere refraction",
         titleName: "Sphere Refraction",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.15),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.15),
         sliderUpdateCallback: {filter, sliderValue in
             filter.radius = sliderValue
         },
@@ -947,7 +947,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { GlassSphereRefraction() },
         listName: "Glass sphere",
         titleName: "Glass Sphere",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.15),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.15),
         sliderUpdateCallback: {filter, sliderValue in
             filter.radius = sliderValue
         },
@@ -1030,7 +1030,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { DissolveBlend() },
         listName: "Dissolve blend",
         titleName: "Dissolve Blend",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.5),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.5),
         sliderUpdateCallback: {filter, sliderValue in
             filter.mix = sliderValue
         },
@@ -1040,7 +1040,7 @@ let filterOperations: [FilterOperationInterface] = [
         filter: { ChromaKeyBlend() },
         listName: "Chroma key blend (green)",
         titleName: "Chroma Key (Green)",
-        sliderConfiguration: .enabled(minimumValue:0.0, maximumValue:1.0, initialValue:0.4),
+        sliderConfiguration: .enabled(minimumValue: 0.0, maximumValue: 1.0, initialValue: 0.4),
         sliderUpdateCallback: {filter, sliderValue in
             filter.thresholdSensitivity = sliderValue
         },

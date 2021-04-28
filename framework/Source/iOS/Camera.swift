@@ -411,7 +411,7 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
 """
             #endif
             
-            cameraFramebuffer.timingStyle = .videoFrame(timestamp:Timestamp(currentTime))
+            cameraFramebuffer.timingStyle = .videoFrame(timestamp: Timestamp(currentTime))
             self.updateTargetsWithFramebuffer(cameraFramebuffer)
             
             // Clean up after all done

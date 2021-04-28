@@ -162,7 +162,7 @@ open class BasicOperation: ImageProcessingOperation {
             if let timestamp = framebuffer.timingStyle.timestamp {
                 if !(timestamp < (latestTimestamp ?? timestamp)) {
                     latestTimestamp = timestamp
-                    renderFramebuffer.timingStyle = .videoFrame(timestamp:timestamp)
+                    renderFramebuffer.timingStyle = .videoFrame(timestamp: timestamp)
                 }
                 
                 framebuffer.unlock()

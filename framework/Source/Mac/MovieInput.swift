@@ -173,7 +173,7 @@ public class MovieInput: ImageSource {
         convertYUVToRGB(shader: self.yuvConversionShader, luminanceFramebuffer: luminanceFramebuffer, chrominanceFramebuffer: chrominanceFramebuffer, resultFramebuffer: movieFramebuffer, colorConversionMatrix: conversionMatrix)
         CVPixelBufferUnlockBaseAddress(movieFrame, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
 
-        movieFramebuffer.timingStyle = .videoFrame(timestamp:Timestamp(withSampleTime))
+        movieFramebuffer.timingStyle = .videoFrame(timestamp: Timestamp(withSampleTime))
         self.updateTargetsWithFramebuffer(movieFramebuffer)
         
         if self.runBenchmark {
