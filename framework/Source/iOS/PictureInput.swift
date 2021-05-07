@@ -1,17 +1,27 @@
 import OpenGLES
 import UIKit
 
-public enum PictureInputTransformStep {
-    case scale(x: CGFloat, y: CGFloat)
-    case translation(tx: CGFloat, ty: CGFloat)
-    case rotation(angle: CGFloat)
-    
-    var isTranslation: Bool {
-        switch self {
-        case .translation: return true
-        default: return false
-        }
+/// Operation on input image, which will be translated into CIImage opereation
+public enum PictureInputProcessStep {
+    public enum AnchorPoint {
+        // Default anchor point for CIImage
+        case originPoint
+        // CIImage.extent.center as anchor point
+        case extentCenter
+        // Custom anchor point
+        case custom(point: CGPoint)
     }
+    /// Scale
+    case scale(x: CGFloat, y: CGFloat, anchorPoint: AnchorPoint)
+    /// Crop to rect. Rect values are from [0, 1] and its base is the lates extend rect of the image after previous steps.
+    /// **isViewCoordinate** is true indicates zero point is Left-Top corner, false indicates zero point is Left-Bottom corner.
+    case crop(rect: CGRect, isViewCoordinate: Bool)
+    /// Rotate image by angle (unit: radian)
+    case rotation(angle: CGFloat, anchorPoint: AnchorPoint)
+    /// Remember the original extent rect, rotate image by angle (unit: radian), scale by ratio, then crop to original extent rect
+    case rotateScaleAndKeepRect(angle: CGFloat, scale: CGFloat, anchorPoint: AnchorPoint)
+    /// Resize apsect ratio
+    case resizeAspectRatio(size: CGSize, isFill: Bool)
 }
 
 public enum PictureInputError: Error, CustomStringConvertible {
@@ -202,7 +212,7 @@ public class PictureInput: ImageSource {
             let ratioW = imageSize.width / image.size.width
             let ratioH = imageSize.height / image.size.height
             let fillRatio = max(ratioW, ratioH)
-            newImage = newImage.scaled(by: fillRatio, roundRect: true)
+            newImage = newImage.scaled(fillRatio, yScale: fillRatio, roundRect: true)
             let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
             // crop image to target display frame
             newImage = newImage.cropped(to: displayFrame)
@@ -232,13 +242,13 @@ public class PictureInput: ImageSource {
         try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation, preprocessRenderInfo: preprocessRenderInfo)
     }
     
-    public convenience init(image: UIImage, size: CGSize?, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, transforms: [[PictureInputTransformStep]]? = nil) throws {
+    public convenience init(image: UIImage, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, processSteps: [PictureInputProcessStep]? = nil) throws {
         #if DEBUG
         let startTime = CACurrentMediaTime()
         #endif
         var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
         var croppedCGImage: CGImage?
-        if let targetSize = size {
+        if let processSteps = processSteps, !processSteps.isEmpty {
             try autoreleasepool {
                 // Get CIImage with orientation
                 let ciImage: CIImage?
@@ -256,50 +266,49 @@ public class PictureInput: ImageSource {
                     throw PictureInputError.createImageError
                 }
                 
-                // Scale
-                let ratioW = targetSize.width / image.size.width
-                let ratioH = targetSize.height / image.size.height
-                let fillRatio = max(ratioW, ratioH)
-                newImage = newImage.scaled(by: fillRatio, roundRect: true)
-                
-                var scaleX: CGFloat = 1
-                var scaleY: CGFloat = 1
-                var translationX: CGFloat = 0
-                var translationY: CGFloat = 0
-                if let stepGroups = transforms, !stepGroups.isEmpty {
-                    var extraTransform = CGAffineTransform.identity
-                    for group in stepGroups {
-                        var groupTransform = CGAffineTransform.identity
-                        for step in group {
-                            switch step {
-                            case let .scale(x, y):
-                                if group.contains(where: { $0.isTranslation }) {
-                                    scaleX *= x
-                                    scaleY *= y
-                                }
-                                groupTransform = groupTransform.concatenating(.init(scaleX: x, y: y))
-                            case let .translation(tx, ty):
-                                translationX += (tx * scaleX * targetSize.width)
-                                translationY += (ty * scaleY * targetSize.height)
-                                groupTransform = groupTransform.concatenating(.init(translationX: translationX, y: translationY))
-                            case let .rotation(angle):
-                                groupTransform = groupTransform.concatenating(.init(rotationAngle: angle))
-                            }
+                for step in processSteps {
+                    switch step {
+                    case let .scale(x, y, anchorPoint):
+                        newImage = newImage.processedWithAnchorPoint(anchorPoint) {
+                            $0.transformed(by: .init(scaleX: x, y: y))
                         }
-                        extraTransform = extraTransform.concatenating(groupTransform)
+                    case let .crop(rect, isViewCoordinate):
+                        // rasterized: [0, 1] -> [0, width/height]
+                        let adjustedY: CGFloat = isViewCoordinate ? (1.0 - rect.maxY) : rect.origin.y
+                        let rasterizedRect = CGRect(x: rect.origin.x * newImage.extent.size.width + newImage.extent.origin.x,
+                                                    y: adjustedY * newImage.extent.size.height + newImage.extent.origin.y,
+                                                    width: rect.size.width * newImage.extent.size.width,
+                                                    height: rect.size.height * newImage.extent.size.height)
+                        newImage = newImage.cropped(to: rasterizedRect)
+                    case let .rotation(angle, anchorPoint):
+                        newImage = newImage.processedWithAnchorPoint(anchorPoint) {
+                            $0.transformed(by: .init(rotationAngle: angle))
+                        }
+                    case let .rotateScaleAndKeepRect(angle, scale, anchorPoint):
+                        let originExtent = newImage.extent
+                        newImage = newImage.processedWithAnchorPoint(anchorPoint) {
+                            $0.transformed(by: .init(rotationAngle: angle))
+                                .transformed(by: .init(scaleX: scale, y: scale))
+                        }
+                        newImage = newImage.cropped(to: originExtent)
+                    case let .resizeAspectRatio(size, isFill):
+                        let croppedUnscaleFrame: CGRect
+                        if isFill {
+                            croppedUnscaleFrame = CGRect(x: 0, y: 0, width: size.width, height: size.height).fitRect(inside: newImage.extent)
+                        } else {
+                            croppedUnscaleFrame = CGRect(x: 0, y: 0, width: size.width, height: size.height).aspectToFill(insideRect: newImage.extent)
+                        }
+                        let roundedCroppedUnscaleFrame = CGRect(x: croppedUnscaleFrame.origin.x.rounded(.towardZero),
+                                                                y: croppedUnscaleFrame.origin.y.rounded(.towardZero),
+                                                                width: croppedUnscaleFrame.width.rounded(.towardZero),
+                                                                height: croppedUnscaleFrame.height.rounded(.towardZero))
+                        newImage = newImage.cropped(to: roundedCroppedUnscaleFrame)
+                        let scaleRatio = size.width / roundedCroppedUnscaleFrame.width
+                        newImage = newImage.scaled(scaleRatio, yScale: scaleRatio, roundRect: true)
                     }
-                    newImage = newImage.transformed(by: extraTransform)
                 }
                 
-                // Crop and generate image
-                let cropRect = CGRect(
-                    x: newImage.extent.origin.x - translationX + (newImage.extent.size.width - targetSize.width) / 2,
-                    y: newImage.extent.origin.y + translationY + (newImage.extent.size.height - targetSize.height) / 2,
-                    width: targetSize.width,
-                    height: targetSize.height
-                )
-                
-                guard let newCgImage = PictureInput.ciContext.createCGImage(newImage, from: cropRect) else {
+                guard let newCgImage = PictureInput.ciContext.createCGImage(newImage, from: newImage.extent) else {
                     throw PictureInputError.createImageError
                 }
                 croppedCGImage = newCgImage
@@ -325,7 +334,7 @@ public class PictureInput: ImageSource {
 {
     PictureInput_pre_process : {
         input: {
-            size: \(image.size.debugRenderInfo), type: UIImage, size:\(size?.debugRenderInfo ?? ""), transforms: \(String(describing: transforms))
+            size: \(image.size.debugRenderInfo), type: UIImage, processSteps: \(String(describing: processSteps))
         },
         output: { size: \(cgImage.width)x\(cgImage.height), type: CGImage },
         time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
@@ -400,9 +409,46 @@ public extension CGSize {
     #endif
 }
 
+extension CGRect {
+    fileprivate func fitRect(inside rect: CGRect) -> CGRect {
+        let scale = min(rect.width / width, rect.height / height)
+        let scaledSize = size.applying(CGAffineTransform(scaleX: scale, y: scale))
+        let fitX = (rect.width - scaledSize.width) / 2 + rect.origin.x
+        let fitY = (rect.height - scaledSize.height) / 2 + rect.origin.y
+        return CGRect(origin: CGPoint(x: fitX, y: fitY), size: scaledSize)
+    }
+
+    fileprivate func aspectToFill(insideRect boundingRect: CGRect) -> CGRect {
+        let widthScale = boundingRect.width / width
+        let heightScale = boundingRect.height / height
+        let scale = max(widthScale, heightScale)
+        var newRect = applying(CGAffineTransform(scaleX: scale, y: scale))
+        newRect.origin = CGPoint(x: boundingRect.midX - newRect.size.width / 2, y: boundingRect.midY - newRect.size.height / 2)
+        return newRect
+    }
+}
+
 private extension CIImage {
-    func scaled(by scaleRatio: CGFloat, roundRect: Bool) -> CIImage {
-        let scaleTransform = CGAffineTransform(scaleX: scaleRatio, y: scaleRatio)
+    func processedWithAnchorPoint(_ anchorPoint: PictureInputProcessStep.AnchorPoint, processes: (CIImage) -> CIImage) -> CIImage {
+        switch anchorPoint {
+        case .originPoint:
+            // Do nothing since it is how CIImage works
+            return self
+        case .extentCenter:
+            let center = CGPoint(x: extent.midX, y: extent.midY)
+            let anchoredImage = transformed(by: CGAffineTransform(translationX: -center.x, y: -center.y))
+            let processedImage = processes(anchoredImage)
+            let anchoreResetImage = processedImage.transformed(by: CGAffineTransform(translationX: center.x, y: center.y))
+            return anchoreResetImage
+        case let .custom(point):
+            let anchoredImage = transformed(by: CGAffineTransform(translationX: -point.x, y: -point.y))
+            let processedImage = processes(anchoredImage)
+            let anchoreResetImage = processedImage.transformed(by: CGAffineTransform(translationX: point.x, y: point.y))
+            return anchoreResetImage
+        }
+    }
+    func scaled(_ xScale: CGFloat, yScale: CGFloat, roundRect: Bool) -> CIImage {
+        let scaleTransform = CGAffineTransform(scaleX: xScale, y: yScale)
         // NOTE: CIImage.extend will always return an integral rect, so if we want the accurate rect after transforming, we need to apply transform on the original rect
         let transformedRect = extent.applying(scaleTransform)
         let scaledImage = transformed(by: scaleTransform)
