@@ -79,6 +79,14 @@ public extension SerialDispatch {
         }
     }
     
+    func runOperation(sync: Bool, _ operation:@escaping () -> Void) {
+        if sync {
+            runOperationSynchronously(operation)
+        } else {
+            runOperationAsynchronously(operation)
+        }
+    }
+    
     func runOperationAsynchronously(_ operation:@escaping () -> Void) {
         self.serialDispatchQueue.async {
             self.executeStartTime = CACurrentMediaTime()
