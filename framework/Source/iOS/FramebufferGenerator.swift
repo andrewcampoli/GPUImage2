@@ -31,6 +31,14 @@ public class FramebufferGenerator {
         }
         return pixelBuffer
     }
+    
+    public func processAndGenerateFromBuffer(_ pixelBuffer: CVPixelBuffer, frameTime: CMTime, processSteps: [PictureInputProcessStep], videoOrientation: ImageOrientation) -> Framebuffer? {
+        var framebuffer: Framebuffer?
+        sharedImageProcessingContext.runOperationSynchronously {
+            framebuffer = _processAndGenerateFromBuffer(pixelBuffer, frameTime: frameTime, processSteps: processSteps, videoOrientation: videoOrientation)
+        }
+        return framebuffer
+    }
 }
 
 private extension FramebufferGenerator {
@@ -46,6 +54,7 @@ private extension FramebufferGenerator {
     }
     
     func _generateFromYUVBuffer(_ yuvPixelBuffer: CVPixelBuffer, frameTime: CMTime, videoOrientation: ImageOrientation) -> Framebuffer? {
+//        let startTime = CACurrentMediaTime()
         guard let yuvConversionShader = yuvConversionShader else {
             debugPrint("ERROR! yuvConversionShader hasn't been setup before starting")
             return nil
@@ -129,6 +138,9 @@ private extension FramebufferGenerator {
                         resultFramebuffer: framebuffer,
                         colorConversionMatrix: conversionMatrix)
         framebuffer.timingStyle = .videoFrame(timestamp: Timestamp(frameTime))
+        
+//        debugPrint("Generated framebuffer from CVPixelBuffer. time: \(CACurrentMediaTime() - startTime)")
+        
         return framebuffer
     }
     
@@ -173,6 +185,52 @@ private extension FramebufferGenerator {
         return pixelBuffer
     }
     
+    func _processAndGenerateFromBuffer(_ yuvPixelBuffer: CVPixelBuffer, frameTime: CMTime, processSteps: [PictureInputProcessStep], videoOrientation: ImageOrientation) -> Framebuffer? {
+//        let startTime = CACurrentMediaTime()
+        CVPixelBufferLockBaseAddress(yuvPixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+        defer {
+            CVPixelBufferUnlockBaseAddress(yuvPixelBuffer, CVPixelBufferLockFlags(rawValue: CVOptionFlags(0)))
+            CVOpenGLESTextureCacheFlush(sharedImageProcessingContext.coreVideoTextureCache, 0)
+        }
+        
+        let ciImage = CIImage(cvPixelBuffer: yuvPixelBuffer,
+                              options: [.applyOrientationProperty: true,
+                                        .properties: [ kCGImagePropertyOrientation: videoOrientation.cgImageOrientation.rawValue ]])
+        var processStepsWithCoordinateCorrection = processSteps
+        // NOTE: CIImage coordinate is mirrored compared with OpenGLES when calling draw(_:in:size:from:), so it needs to be mirrored before render to OpenGL
+        processStepsWithCoordinateCorrection.append(.scale(x: 1, y: -1, anchorPoint: .extentCenter))
+        let processedImage = ciImage.processed(with: processStepsWithCoordinateCorrection)
+        
+//        debugPrint("Process CIImage. time: \(CACurrentMediaTime() - startTime)")
+        
+        let bufferHeight = Int32(processedImage.extent.height)
+        let bufferWidth = Int32(processedImage.extent.width)
+        
+        let portraitSize: GLSize
+        switch videoOrientation.rotationNeededForOrientation(.portrait) {
+        case .noRotation, .rotate180, .flipHorizontally, .flipVertically:
+            portraitSize = GLSize(width: GLint(bufferWidth), height: GLint(bufferHeight))
+        case .rotateCounterclockwise, .rotateClockwise, .rotateClockwiseAndFlipVertically, .rotateClockwiseAndFlipHorizontally:
+            portraitSize = GLSize(width: GLint(bufferHeight), height: GLint(bufferWidth))
+        }
+        
+        let framebuffer = sharedImageProcessingContext.framebufferCache.requestFramebufferWithProperties(orientation: .portrait, size: portraitSize, textureOnly: false)
+        framebuffer.timingStyle = .videoFrame(timestamp: Timestamp(frameTime))
+        
+        // Bind texture
+        framebuffer.activateFramebufferForRendering()
+        glBindTexture(GLenum(GL_TEXTURE_2D), framebuffer.texture)
+        glTexParameterf(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GLfloat(GL_CLAMP_TO_EDGE))
+        glTexParameterf(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GLfloat(GL_CLAMP_TO_EDGE))
+        
+        // TODO:
+        CIImage.glBackedContext.draw(processedImage, in: CGRect(origin: .zero, size: processedImage.extent.size), from: processedImage.extent)
+        
+//        debugPrint("Reneder CIImage to OpenGL texture. time: \(CACurrentMediaTime() - startTime)")
+        
+        return framebuffer
+    }
+    
     func _createPixelBufferPool(_ width: Int32, _ height: Int32, _ pixelFormat: FourCharCode, _ maxBufferCount: Int32) -> CVPixelBufferPool? {
         var outputPool: CVPixelBufferPool?
         
@@ -180,6 +238,8 @@ private extension FramebufferGenerator {
                                                       kCVPixelBufferWidthKey: width,
                                                       kCVPixelBufferHeightKey: height,
                                                       kCVPixelFormatOpenGLESCompatibility: true,
+                                                      kCVPixelBufferIOSurfaceCoreAnimationCompatibilityKey: true,
+                                                      kCVPixelBufferIOSurfaceOpenGLESFBOCompatibilityKey: true,
                                                       kCVPixelBufferIOSurfacePropertiesKey: NSDictionary()]
         
         let pixelBufferPoolOptions: NSDictionary = [kCVPixelBufferPoolMinimumBufferCountKey: maxBufferCount]

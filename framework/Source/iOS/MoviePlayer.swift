@@ -42,6 +42,7 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
     public private(set) var isPlaying = false
     public var lastPlayerItem: AVPlayerItem?
     public var playableItem: AVPlayerItem? { currentItem ?? lastPlayerItem }
+    public var processSteps: [PictureInputProcessStep]?
     
     var displayLink: CADisplayLink?
     
@@ -621,7 +622,14 @@ private extension MoviePlayer {
             }
         }
         
-        guard hasTarget, let framebuffer = framebufferGenerator.generateFromYUVBuffer(pixelBuffer, frameTime: timeForDisplay, videoOrientation: videoOrientation) else { return }
+        guard hasTarget else { return }
+        let newFramebuffer: Framebuffer?
+        if let processSteps = processSteps, !processSteps.isEmpty {
+            newFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(pixelBuffer, frameTime: timeForDisplay, processSteps: processSteps, videoOrientation: videoOrientation)
+        } else {
+            newFramebuffer = framebufferGenerator.generateFromYUVBuffer(pixelBuffer, frameTime: timeForDisplay, videoOrientation: videoOrientation)
+        }
+        guard let framebuffer = newFramebuffer else { return }
         framebuffer.userInfo = framebufferUserInfo
         
         #if DEBUG

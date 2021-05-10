@@ -21,6 +21,15 @@ public enum ImageOrientation {
             case (.landscapeRight, .portraitUpsideDown): return .rotateClockwise
         }
     }
+    
+    var cgImageOrientation: CGImagePropertyOrientation {
+        switch self {
+        case .portrait: return .up
+        case .portraitUpsideDown: return .down
+        case .landscapeLeft: return .left
+        case .landscapeRight: return .right
+        }
+    }
 }
 
 public enum Rotation {
