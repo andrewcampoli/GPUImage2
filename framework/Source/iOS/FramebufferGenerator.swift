@@ -219,13 +219,14 @@ private extension FramebufferGenerator {
         
         // Bind texture
         framebuffer.activateFramebufferForRendering()
+        clearFramebufferWithColor(Color.black)
         glBindTexture(GLenum(GL_TEXTURE_2D), framebuffer.texture)
         glTexParameterf(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_S), GLfloat(GL_CLAMP_TO_EDGE))
         glTexParameterf(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GLfloat(GL_CLAMP_TO_EDGE))
         
-        // TODO:
-        CIImage.glBackedContext.draw(processedImage, in: CGRect(origin: .zero, size: processedImage.extent.size), from: processedImage.extent)
-        
+        // TODO: this API performance is slower than Crop filter, improve this later
+        CIImage.glBackedContext.draw(processedImage, in: CGRect(origin: .zero, size: processedImage.accurateExtent.rounded(.towardZero).size), from: processedImage.accurateExtent.rounded(.towardZero))
+         
 //        debugPrint("Reneder CIImage to OpenGL texture. time: \(CACurrentMediaTime() - startTime)")
         
         return framebuffer

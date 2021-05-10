@@ -211,10 +211,10 @@ public class PictureInput: ImageSource {
             let ratioW = imageSize.width / image.size.width
             let ratioH = imageSize.height / image.size.height
             let fillRatio = max(ratioW, ratioH)
-            newImage = newImage.scaled(fillRatio, yScale: fillRatio, roundRect: true)
+            newImage = newImage.accurateTransformed(by: .init(scaleX: fillRatio, y: fillRatio))
             let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
             // crop image to target display frame
-            newImage = newImage.cropped(to: displayFrame)
+            newImage = newImage.accurateCropped(to: displayFrame)
             guard let newCgImage = newImage.renderToCGImage() else {
                 throw PictureInputError.createImageError
             }
