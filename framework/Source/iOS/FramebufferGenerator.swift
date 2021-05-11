@@ -206,15 +206,7 @@ private extension FramebufferGenerator {
         let bufferHeight = Int32(processedImage.extent.height)
         let bufferWidth = Int32(processedImage.extent.width)
         
-        let portraitSize: GLSize
-        switch videoOrientation.rotationNeededForOrientation(.portrait) {
-        case .noRotation, .rotate180, .flipHorizontally, .flipVertically:
-            portraitSize = GLSize(width: GLint(bufferWidth), height: GLint(bufferHeight))
-        case .rotateCounterclockwise, .rotateClockwise, .rotateClockwiseAndFlipVertically, .rotateClockwiseAndFlipHorizontally:
-            portraitSize = GLSize(width: GLint(bufferHeight), height: GLint(bufferWidth))
-        }
-        
-        let framebuffer = sharedImageProcessingContext.framebufferCache.requestFramebufferWithProperties(orientation: .portrait, size: portraitSize, textureOnly: false)
+        let framebuffer = sharedImageProcessingContext.framebufferCache.requestFramebufferWithProperties(orientation: .portrait, size: GLSize(width: GLint(bufferWidth), height: GLint(bufferHeight)), textureOnly: false)
         framebuffer.timingStyle = .videoFrame(timestamp: Timestamp(frameTime))
         
         // Bind texture

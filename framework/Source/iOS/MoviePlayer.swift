@@ -68,7 +68,7 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
     }
     public var videoOrientation: ImageOrientation {
         guard let asset = asset else { return .portrait }
-        return asset.imageOrientation ?? .portrait
+        return asset.originalOrientation ?? .portrait
     }
     // NOTE: be careful, this property might block your thread since it needs to access currentTime
     public var didPlayToEnd: Bool {
