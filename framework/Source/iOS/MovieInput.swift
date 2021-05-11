@@ -80,6 +80,7 @@ public class MovieInput: ImageSource {
     
     var movieFramebuffer: Framebuffer?
     public var framebufferUserInfo: [AnyHashable: Any]?
+    public var processSteps: [PictureInputProcessStep]?
     
     #if DEBUG
     public var debugRenderInfo: String = ""
@@ -464,8 +465,13 @@ public class MovieInput: ImageSource {
     
     func process(movieFrame: CVPixelBuffer, withSampleTime: CMTime) {
         let startTime = CACurrentMediaTime()
-        
-        guard let framebuffer = framebufferGenerator.generateFromYUVBuffer(movieFrame, frameTime: withSampleTime, videoOrientation: videoOrientation) else {
+        var outputFramebuffer: Framebuffer?
+        if let processSteps = processSteps, !processSteps.isEmpty {
+            outputFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(movieFrame, frameTime: withSampleTime, processSteps: processSteps, videoOrientation: videoOrientation)
+        } else {
+            outputFramebuffer = framebufferGenerator.generateFromYUVBuffer(movieFrame, frameTime: withSampleTime, videoOrientation: videoOrientation)
+        }
+        guard let framebuffer = outputFramebuffer else {
             print("Cannot generate framebuffer from YUVBuffer")
             return
         }
