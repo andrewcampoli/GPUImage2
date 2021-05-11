@@ -17,11 +17,13 @@ extension CIImage {
         for step in processSteps {
             switch step {
             case let .scale(x, y, anchorPoint):
+                guard x != 1.0 || y != 1.0 else { continue }
                 newImage = newImage.processedWithAnchorPoint(anchorPoint) {
                     let transform = CGAffineTransform(scaleX: x, y: y)
                     return $0.accurateTransformed(by: transform)
                 }
             case let .crop(rect, isViewCoordinate):
+                guard rect.origin != .zero || rect.size != CGSize(width: 1.0, height: 1.0) else { continue }
                 // rasterized: [0, 1] -> [0, width/height]
                 let adjustedY: CGFloat = isViewCoordinate ? (1.0 - rect.maxY) : rect.origin.y
                 let rasterizedRect = CGRect(x: rect.origin.x * newImage.accurateExtent.size.width + newImage.accurateExtent.origin.x,
@@ -30,11 +32,13 @@ extension CIImage {
                                             height: rect.size.height * newImage.accurateExtent.size.height).rounded()
                 newImage = newImage.accurateCropped(to: rasterizedRect)
             case let .rotation(angle, anchorPoint):
+                guard angle != 0 else { continue }
                 newImage = newImage.processedWithAnchorPoint(anchorPoint) {
                     let transform = CGAffineTransform(rotationAngle: angle)
                     return $0.accurateTransformed(by: transform)
                 }
             case let .rotateScaleAndKeepRect(angle, scale, anchorPoint):
+                guard angle != 0 || scale != 0 else { continue }
                 let originExtent = newImage.accurateExtent
                 newImage = newImage.processedWithAnchorPoint(anchorPoint) {
                     let transform = CGAffineTransform(rotationAngle: angle).scaledBy(x: scale, y: scale)
@@ -42,6 +46,7 @@ extension CIImage {
                 }
                 newImage = newImage.accurateCropped(to: originExtent)
             case let .resizeAspectRatio(size, isFill, allowUpScale):
+                guard size != .zero else { continue }
                 let roundedCroppedUnscaleFrame: CGRect
                 if isFill {
                     roundedCroppedUnscaleFrame = CGRect(x: 0, y: 0, width: size.width, height: size.height).fitRect(inside: newImage.accurateExtent).rounded()
