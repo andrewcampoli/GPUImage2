@@ -1,29 +1,6 @@
 import OpenGLES
 import UIKit
 
-/// Operation on input image, which will be translated into CIImage opereation
-public enum PictureInputProcessStep {
-    public enum AnchorPoint {
-        // Default anchor point for CIImage
-        case originPoint
-        // CIImage.extent.center as anchor point
-        case extentCenter
-        // Custom anchor point
-        case custom(point: CGPoint)
-    }
-    /// Scale
-    case scale(x: CGFloat, y: CGFloat, anchorPoint: AnchorPoint)
-    /// Crop to rect. Rect values are from [0, 1] and its base is the lates extend rect of the image after previous steps.
-    /// **isViewCoordinate** is true indicates zero point is Left-Top corner, false indicates zero point is Left-Bottom corner.
-    case crop(rect: CGRect, isViewCoordinate: Bool)
-    /// Rotate image by angle (unit: radian)
-    case rotation(angle: CGFloat, anchorPoint: AnchorPoint)
-    /// Remember the original extent rect, rotate image by angle (unit: radian), scale by ratio, then crop to original extent rect
-    case rotateScaleAndKeepRect(angle: CGFloat, scale: CGFloat, anchorPoint: AnchorPoint)
-    /// Resize apsect ratio
-    case resizeAspectRatio(size: CGSize, isFill: Bool, allowUpScale: Bool)
-}
-
 public enum PictureInputError: Error, CustomStringConvertible {
     case zeroSizedImageError
     case dataProviderNilError
