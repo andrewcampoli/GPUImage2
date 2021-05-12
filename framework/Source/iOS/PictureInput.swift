@@ -192,7 +192,7 @@ public class PictureInput: ImageSource {
             let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
             // crop image to target display frame
             newImage = newImage.accurateCropped(to: displayFrame)
-            guard let newCgImage = newImage.renderToCGImage() else {
+            guard let newCgImage = newImage.renderToCGImage(onGPU: false) else {
                 throw PictureInputError.createImageError
             }
             cgImage = newCgImage
@@ -238,7 +238,7 @@ public class PictureInput: ImageSource {
                         ]
                     ])
                 }
-                guard let newCgImage = ciImage?.processed(with: processSteps).renderToCGImage() else {
+                guard let newCgImage = ciImage?.processed(with: processSteps).renderToCGImage(onGPU: false) else {
                     throw PictureInputError.createImageError
                 }
                 croppedCGImage = newCgImage
@@ -248,7 +248,7 @@ public class PictureInput: ImageSource {
                   let ciImage = CIImage(image: image,
                                         options: [.applyOrientationProperty: true,
                                                   .properties: [ kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue ]]),
-                  let rotatedImage = ciImage.renderToCGImage() {
+                  let rotatedImage = ciImage.renderToCGImage(onGPU: false) {
             // Rotated correct orientation
             croppedCGImage = rotatedImage
         } else {

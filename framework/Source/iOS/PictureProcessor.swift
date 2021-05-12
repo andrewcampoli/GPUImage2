@@ -32,7 +32,8 @@ public enum PictureInputProcessStep {
 
 extension CIImage {
     /// Shared CIContext to improve performance
-    static var glBackedContext = CIContext(eaglContext: sharedImageProcessingContext.context)
+    static var ciGPUContext = CIContext(eaglContext: sharedImageProcessingContext.context)
+    static var ciCPUContext = CIContext()
     
     func processed(with processSteps: [PictureInputProcessStep]?) -> CIImage {
         guard let processSteps = processSteps, !processSteps.isEmpty else { return self }
@@ -133,8 +134,8 @@ extension CIImage {
         return croppedImage
     }
     
-    func renderToCGImage() -> CGImage? {
-        return Self.glBackedContext.createCGImage(self, from: accurateExtent.rounded(.towardZero))
+    func renderToCGImage(onGPU: Bool) -> CGImage? {
+        return (onGPU ? Self.ciGPUContext : Self.ciCPUContext).createCGImage(self, from: accurateExtent.rounded(.towardZero))
     }
     
     private static var _accurateExtentKey = 0

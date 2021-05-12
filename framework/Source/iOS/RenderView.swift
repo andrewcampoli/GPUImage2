@@ -88,6 +88,7 @@ public class RenderView: UIView, ImageConsumer {
     }
     
     deinit {
+        debugPrint("RenderView deinit")
         let strongDisplayFramebuffer = displayFramebuffer
         let strongDisplayRenderbuffer = displayRenderbuffer
         sharedImageProcessingContext.runOperationAsynchronously {

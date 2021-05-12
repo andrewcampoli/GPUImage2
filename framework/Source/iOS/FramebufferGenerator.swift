@@ -217,7 +217,7 @@ private extension FramebufferGenerator {
         glTexParameterf(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_WRAP_T), GLfloat(GL_CLAMP_TO_EDGE))
         
         // TODO: this API performance is slower than Crop filter, improve this later
-        CIImage.glBackedContext.draw(processedImage, in: CGRect(origin: .zero, size: processedImage.accurateExtent.rounded(.towardZero).size), from: processedImage.accurateExtent.rounded(.towardZero))
+        CIImage.ciGPUContext.draw(processedImage, in: CGRect(origin: .zero, size: processedImage.accurateExtent.rounded(.towardZero).size), from: processedImage.accurateExtent.rounded(.towardZero))
          
 //        debugPrint("Reneder CIImage to OpenGL texture. time: \(CACurrentMediaTime() - startTime)")
         
