@@ -10,7 +10,7 @@ public class PictureOutput: ImageConsumer {
     public var encodedImageAvailableCallback: ((Data) -> Void)?
     public var encodedImageFormat: PictureFileFormat = .png
     public var imageAvailableCallback: ((NSImage) -> Void)?
-    public var onlyCaptureNextFrame: Bool = true
+    public var onlyCaptureNextFrame = true
     
     public let sources = SourceContainer()
     public let maximumInputs: UInt = 1

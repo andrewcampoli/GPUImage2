@@ -5,8 +5,8 @@ let initialBenchmarkFramesToIgnore = 5
 
 public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     public var orientation: ImageOrientation
-    public var runBenchmark: Bool = false
-    public var logFPS: Bool = false
+    public var runBenchmark = false
+    public var logFPS = false
     public var audioEncodingTarget: AudioEncodingTarget? {
         didSet {
             guard let audioEncodingTarget = audioEncodingTarget else {
@@ -31,7 +31,7 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     var audioInput: AVCaptureDeviceInput?
     var audioOutput: AVCaptureAudioDataOutput?
 
-    var supportsFullYUVRange: Bool = false
+    var supportsFullYUVRange = false
     let captureAsYUV: Bool
     let yuvConversionShader: ShaderProgram?
     let frameRenderingSemaphore = DispatchSemaphore(value: 1)

@@ -4,7 +4,7 @@ import Cocoa
 public class PictureInput: ImageSource {
     public let targets = TargetContainer()
     var imageFramebuffer: Framebuffer!
-    var hasProcessedImage: Bool = false
+    var hasProcessedImage = false
 
     public init(image: CGImage, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation = .portrait) {
         // TODO: Dispatch this whole thing asynchronously to move image loading off main thread

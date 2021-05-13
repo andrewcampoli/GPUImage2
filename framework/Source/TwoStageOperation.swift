@@ -1,5 +1,5 @@
 open class TwoStageOperation: BasicOperation {
-    public var overrideDownsamplingOptimization: Bool = false
+    public var overrideDownsamplingOptimization = false
 
 //    override var outputFramebuffer:Framebuffer { get { return Framebuffer } }
 

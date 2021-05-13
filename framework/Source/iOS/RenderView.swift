@@ -26,7 +26,7 @@ public class RenderView: UIView, ImageConsumer {
     var displayRenderbuffer: GLuint?
     var backingSize = GLSize(width: 0, height: 0)
     var renderSize = CGSize.zero
-    private var isAppForeground: Bool = true
+    private var isAppForeground = true
     
     private lazy var displayShader: ShaderProgram = {
         return sharedImageProcessingContext.passthroughShader

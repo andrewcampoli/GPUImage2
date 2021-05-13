@@ -30,7 +30,7 @@ public class PictureInput: ImageSource {
     public private(set) var imageFramebuffer: Framebuffer?
     public var framebufferUserInfo: [AnyHashable: Any]?
     public let imageName: String
-    var hasProcessedImage: Bool = false
+    var hasProcessedImage = false
     #if DEBUG
     public var printDebugRenderInfos = true
     public var debugRenderInfo: String = ""

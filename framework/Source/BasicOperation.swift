@@ -16,7 +16,7 @@ open class BasicOperation: ImageProcessingOperation {
     public var overriddenOutputSize: Size?
     public var overriddenOutputRotation: Rotation?
     public var backgroundColor = Color.black
-    public var drawUnmodifiedImageOutsideOfMask: Bool = true
+    public var drawUnmodifiedImageOutsideOfMask = true
     public var mask: ImageSource? {
         didSet {
             if let mask = mask {
@@ -33,7 +33,7 @@ open class BasicOperation: ImageProcessingOperation {
             }
         }
     }
-    public var activatePassthroughOnNextFrame: Bool = false
+    public var activatePassthroughOnNextFrame = false
     public var uniformSettings = ShaderUniformSettings()
     
     // MARK: -

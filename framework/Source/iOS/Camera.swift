@@ -66,8 +66,8 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
             configureDeviceInput(location: location, deviceType: deviceType)
         }
     }
-    public var runBenchmark: Bool = false
-    public var logFPS: Bool = false
+    public var runBenchmark = false
+    public var logFPS = false
     public var audioEncodingTarget: AudioEncodingTarget? {
         didSet {
             guard let audioEncodingTarget = audioEncodingTarget else {
@@ -94,7 +94,7 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
     public var microphone: AVCaptureDevice?
     public var audioInput: AVCaptureDeviceInput?
     public var audioOutput: AVCaptureAudioDataOutput?
-    public var dontDropFrames: Bool = false
+    public var dontDropFrames = false
     public var deviceType: AVCaptureDevice.DeviceType {
         return inputCamera.deviceType
     }
@@ -113,7 +113,7 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
         }
     }
 
-    var supportsFullYUVRange: Bool = false
+    var supportsFullYUVRange = false
     let captureAsYUV: Bool
     let yuvConversionShader: ShaderProgram?
     let frameRenderingSemaphore = DispatchSemaphore(value: 1)

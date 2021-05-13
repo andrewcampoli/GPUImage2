@@ -305,7 +305,7 @@ public class ImageRelay: ImageProcessingOperation {
     public let sources = SourceContainer()
     public let targets = TargetContainer()
     public let maximumInputs: UInt = 1
-    public var preventRelay: Bool = false
+    public var preventRelay = false
     
     public init() {
     }

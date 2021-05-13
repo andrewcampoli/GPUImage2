@@ -12,8 +12,8 @@ public class PictureOutput: ImageConsumer {
     public var encodedJPEGImageCompressionQuality: CGFloat = 0.8
     public var imageAvailableCallback: ((UIImage) -> Void)?
     public var cgImageAvailableCallback: ((CGImage) -> Void)?
-    public var onlyCaptureNextFrame: Bool = true
-    public var keepImageAroundForSynchronousCapture: Bool = false
+    public var onlyCaptureNextFrame = true
+    public var keepImageAroundForSynchronousCapture = false
     public var exportWithAlpha = false
     var storedFramebuffer: Framebuffer?
     

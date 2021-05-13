@@ -25,7 +25,7 @@ enum ShaderType {
 
 public class ShaderProgram {
     public var colorUniformsUseFourComponents = false
-    public static var disableAttributeCache: Bool = false
+    public static var disableAttributeCache = false
     let program: GLuint
     let initTime: CFTimeInterval?
     var vertexShader: GLuint! // At some point, the Swift compiler will be able to deal with the early throw and we can convert these to lets
