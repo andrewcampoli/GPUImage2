@@ -35,7 +35,7 @@ extension CIImage {
     static var ciGPUContext = CIContext(eaglContext: sharedImageProcessingContext.context)
     static var ciCPUContext = CIContext()
     
-    func processed(with processSteps: [PictureInputProcessStep]?) -> CIImage {
+    public func processed(with processSteps: [PictureInputProcessStep]?) -> CIImage {
         guard let processSteps = processSteps, !processSteps.isEmpty else { return self }
         var newImage = self
         for step in processSteps {

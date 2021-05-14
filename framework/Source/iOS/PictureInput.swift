@@ -172,52 +172,7 @@ public class PictureInput: ImageSource {
         guard let image = UIImage(named: imageName) else { throw PictureInputError.noSuchImageError(imageName: imageName) }
         try self.init(image: image.cgImage!, imageName: imageName, smoothlyScaleOutput: smoothlyScaleOutput, orientation: orientation ?? image.imageOrientation.gpuOrientation)
     }
-    
-    public convenience init(image: UIImage, imageSize: CGSize, renderTargetSize: CGSize, renderTargetOffset: CGPoint, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil) throws {
-        #if DEBUG
-        let startTime = CACurrentMediaTime()
-        #endif
         
-        var targetOrientation = orientation ?? image.imageOrientation.gpuOrientation
-        var cgImage: CGImage = image.cgImage!
-        try autoreleasepool {
-            let options: [CIImageOption: Any] = [.applyOrientationProperty: true,
-                                                  .properties: [kCGImagePropertyOrientation: image.imageOrientation.cgImageOrientation.rawValue]]
-            var newImage = CIImage(cgImage: cgImage, options: options)
-            // scale to image size
-            let ratioW = imageSize.width / image.size.width
-            let ratioH = imageSize.height / image.size.height
-            let fillRatio = max(ratioW, ratioH)
-            newImage = newImage.accurateTransformed(by: .init(scaleX: fillRatio, y: fillRatio))
-            let displayFrame = CGRect(origin: CGPoint(x: renderTargetOffset.x * imageSize.width, y: renderTargetOffset.y * imageSize.height), size: renderTargetSize)
-            // crop image to target display frame
-            newImage = newImage.accurateCropped(to: displayFrame)
-            guard let newCgImage = newImage.renderToCGImage(onGPU: false) else {
-                throw PictureInputError.createImageError
-            }
-            cgImage = newCgImage
-            targetOrientation = orientation ?? .portrait
-        }
-        
-        let preprocessRenderInfo: String
-        #if DEBUG
-        preprocessRenderInfo = """
-{
-    PictureInput_pre_process : {
-        input: {
-            size: \(image.size.debugRenderInfo), type: UIImage, imageSize:\(imageSize.debugRenderInfo), renderTargetSize: \(renderTargetSize.debugRenderInfo), renderTargetOffset: \(renderTargetOffset.debugDescription)
-        },
-        output: { size: \(cgImage.width)x\(cgImage.height), type: CGImage },
-        time: \((CACurrentMediaTime() - startTime) * 1000.0)ms
-},
-"""
-        #else
-        preprocessRenderInfo = ""
-        #endif
-        
-        try self.init(image: cgImage, imageName: "UIImage", smoothlyScaleOutput: smoothlyScaleOutput, orientation: targetOrientation, preprocessRenderInfo: preprocessRenderInfo)
-    }
-    
     public convenience init(image: UIImage, smoothlyScaleOutput: Bool = false, orientation: ImageOrientation? = nil, processSteps: [PictureInputProcessStep]? = nil) throws {
         #if DEBUG
         let startTime = CACurrentMediaTime()
