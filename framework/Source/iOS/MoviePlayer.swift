@@ -625,7 +625,7 @@ private extension MoviePlayer {
         guard hasTarget else { return }
         let newFramebuffer: Framebuffer?
         if let processSteps = processSteps, !processSteps.isEmpty {
-            newFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(pixelBuffer, frameTime: timeForDisplay, processSteps: processSteps, videoOrientation: videoOrientation)
+            newFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(pixelBuffer, frameTime: timeForDisplay, processSteps: processSteps, videoOrientation: asset?.originalOrientation ?? .portrait)
         } else {
             newFramebuffer = framebufferGenerator.generateFromYUVBuffer(pixelBuffer, frameTime: timeForDisplay, videoOrientation: videoOrientation)
         }

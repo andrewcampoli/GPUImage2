@@ -467,7 +467,7 @@ public class MovieInput: ImageSource {
         let startTime = CACurrentMediaTime()
         var outputFramebuffer: Framebuffer?
         if let processSteps = processSteps, !processSteps.isEmpty {
-            outputFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(movieFrame, frameTime: withSampleTime, processSteps: processSteps, videoOrientation: videoOrientation)
+            outputFramebuffer = framebufferGenerator.processAndGenerateFromBuffer(movieFrame, frameTime: withSampleTime, processSteps: processSteps, videoOrientation: asset.originalOrientation ?? .portrait)
         } else {
             outputFramebuffer = framebufferGenerator.generateFromYUVBuffer(movieFrame, frameTime: withSampleTime, videoOrientation: videoOrientation)
         }
