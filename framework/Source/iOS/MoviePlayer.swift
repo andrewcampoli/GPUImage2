@@ -56,9 +56,18 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
     var totalFrameTime: Double = 0.0
     public var dropFrameBeforeTime: CMTime?
     public var playrate: Float = 1.0
+    private lazy var assetDurationMap = [AVAsset: CMTime]()
     public var assetDuration: CMTime {
-        if asset?.statusOfValue(forKey: "duration", error: nil) == .loaded {
-            return asset?.duration ?? .zero
+        if let currentAsset = asset {
+            if let cachedDuration = assetDurationMap[currentAsset] {
+                return cachedDuration
+            } else if currentAsset.statusOfValue(forKey: "duration", error: nil) == .loaded {
+                let duration = currentAsset.duration
+                assetDurationMap[currentAsset] = duration
+                return duration
+            } else {
+                return .zero
+            }
         } else {
             return .zero
         }
@@ -346,6 +355,7 @@ public class MoviePlayer: AVQueuePlayer, ImageSource {
         isSeeking = false
         nextSeeking = nil
         dropFrameBeforeTime = nil
+        assetDurationMap.removeAll()
         MoviePlayer.looperDict[self]?.disableLooping()
         MoviePlayer.looperDict[self] = nil
     }
