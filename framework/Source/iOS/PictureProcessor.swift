@@ -110,7 +110,7 @@ extension CIImage {
         }
     }
     
-    func accurateTransformed(by transform: CGAffineTransform, rounded: Bool = true) -> CIImage {
+    public func accurateTransformed(by transform: CGAffineTransform, rounded: Bool = true) -> CIImage {
         let transformedRect = accurateExtent.applying(transform)
         let transformedImage: CIImage
         if rounded && transformedRect.rounded() != transformedRect {
@@ -128,7 +128,7 @@ extension CIImage {
         return transformedImage
     }
     
-    func accurateCropped(to rect: CGRect) -> CIImage {
+    public func accurateCropped(to rect: CGRect) -> CIImage {
         let croppedImage = cropped(to: rect)
         croppedImage.accurateExtent = croppedImage.extent
         return croppedImage
@@ -141,13 +141,13 @@ extension CIImage {
     private static var _accurateExtentKey = 0
     
     // NOTE: CIImage.extend will sometimes return an integral rect, so if we want the accurate rect after transforming, we need to apply transform on the original rect
-    var accurateExtent: CGRect {
+    public var accurateExtent: CGRect {
         get { (objc_getAssociatedObject(self, &Self._accurateExtentKey) as? NSValue)?.cgRectValue ?? extent }
         set { objc_setAssociatedObject(self, &Self._accurateExtentKey, NSValue(cgRect: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
     // Return the original rect if every number is integral, or it will thrink by 1 point in border
-    var trimmedExtent: CGRect {
+    public var trimmedExtent: CGRect {
         let accurateExtent = accurateExtent
         if accurateExtent.integral != accurateExtent {
             return accurateExtent.rounded(.up).insetBy(dx: 1, dy: 1)
