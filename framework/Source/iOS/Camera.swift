@@ -215,7 +215,8 @@ public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBuffer
                 captureSession.addOutput(captureMetadataOutput)
                 
                 captureMetadataOutput.setMetadataObjectsDelegate(metadataDelegate, queue: cameraProcessingQueue)
-                captureMetadataOutput.metadataObjectTypes = metadataObjectTypes
+                let validTypes = metadataObjectTypes.filter { captureMetadataOutput.availableMetadataObjectTypes.contains($0) }
+                captureMetadataOutput.metadataObjectTypes = validTypes
             }
         }
         
