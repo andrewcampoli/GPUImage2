@@ -117,8 +117,8 @@ extension CIImage {
             let sizeRoundedTransform = transform.scaledBy(x: transformedRect.rounded().width / transformedRect.width, y: transformedRect.rounded().height / transformedRect.height)
             let sizeRoundedRect = accurateExtent.applying(sizeRoundedTransform)
             let positionRoundedRect = sizeRoundedRect.rounded(.towardZero)
-            let positionRoundedTransform = sizeRoundedTransform.translatedBy(x: positionRoundedRect.minX - sizeRoundedRect.minX,
-                                                                             y: positionRoundedRect.minY - sizeRoundedRect.minY)
+            let positionTransfrom = CGAffineTransform(translationX: positionRoundedRect.minX - sizeRoundedRect.minX, y: positionRoundedRect.minY - sizeRoundedRect.minY)
+            let positionRoundedTransform = sizeRoundedTransform.concatenating(positionTransfrom)
             transformedImage = transformed(by: positionRoundedTransform)
             transformedImage.accurateExtent = accurateExtent.applying(positionRoundedTransform)
         } else {
