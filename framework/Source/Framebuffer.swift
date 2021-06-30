@@ -82,7 +82,6 @@ public class Framebuffer: Hashable {
         
         if !textureOnly {
             do {
-                print("generateFramebufferForTexture: texture \(texture) size \(size) internalFormat \(internalFormat) format \(format) type\(type) stencil \(stencil)")
                 let (createdFrameBuffer, createdStencil) = try generateFramebufferForTexture(texture, width: size.width, height: size.height, internalFormat: internalFormat, format: format, type: type, stencil: stencil)
                 framebuffer = createdFrameBuffer
                 stencilBuffer = createdStencil

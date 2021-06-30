@@ -213,6 +213,7 @@ func generateFramebufferForTexture(_ texture: GLuint, width: GLint, height: GLin
 
     let status = glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER))
     if status != GLenum(GL_FRAMEBUFFER_COMPLETE) {
+        print("Error status \(status) generateFramebufferForTexture: texture \(texture) width \(width) height \(height) internalFormat \(internalFormat) format \(format) type\(type) stencil \(stencil)")
         throw FramebufferCreationError(errorCode: status)
     }
     
