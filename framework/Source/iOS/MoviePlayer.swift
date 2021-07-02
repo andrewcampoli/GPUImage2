@@ -664,7 +664,7 @@ private extension MoviePlayer {
                 print("[MoviePlayer] Resume playing succeed")
             }
         }
-        guard currentItem?.status == .readyToPlay else { return }
+        guard isPlaying, currentItem?.status == .readyToPlay else { return }
         let playTime = currentTime()
         guard playTime.seconds > 0 else { return }
         
